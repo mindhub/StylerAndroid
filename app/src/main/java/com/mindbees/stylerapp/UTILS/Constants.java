@@ -6,7 +6,7 @@ package com.mindbees.stylerapp.UTILS;
 
 public class Constants {
     public static final String TAG_ISLOGGED_IN = "is_logged_in";
-
+    public static final String FirstTime_TERMS="first_time_terms";
 
 
 
@@ -16,4 +16,5 @@ public class Constants {
     public static final String AUTH_KEY = "FCRfP2cePUS6ryB";
     public static final String AUTH_SECRET = "pr89nmdWb2xj4ND";
     public static final String ACCOUNT_KEY = "3wJCRn6pnFvoSchpdoD3";
+
 }
