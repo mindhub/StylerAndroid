@@ -378,6 +378,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_centerInParent="true"
+            android:id="@+id/register_next"
             android:src="@drawable/ic_register_next"
             android:layout_height="wrap_content" />
 

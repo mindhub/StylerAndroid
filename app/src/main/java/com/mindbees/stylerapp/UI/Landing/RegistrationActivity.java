@@ -98,7 +98,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
     LatLng temp;
     LatLngBounds BOUNDS_MOUNTAIN_VIEW;
     public static final int PLACE_PICKER_REQUEST = 00;
-    ImageView picedit;
+    ImageView picedit,reg_next;
     private File mFileTemp;
     LinearLayout Linearmale,Linearfemale;
     TextView textmale,textfemale,textilike,textloooking;
@@ -319,7 +319,13 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
 
             }
         });
-
+        reg_next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(RegistrationActivity.this,Registration_2_Activity.class);
+                startActivity(intent);
+            }
+        });
 
     }
 
@@ -362,6 +368,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         editethnicity= (EditText) findViewById(R.id.editTextehnic);
         editlookingfor= (EditText) findViewById(R.id.editTextiamLookingfor);
         spinethnic= (AppCompatSpinner) findViewById(R.id.spinnerEthnicity);
+        reg_next= (ImageView) findViewById(R.id.register_next);
 
     }
     void pickPhotoDialog() {

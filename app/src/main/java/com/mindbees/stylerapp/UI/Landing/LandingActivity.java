@@ -63,7 +63,7 @@ public class LandingActivity extends BaseActivity {
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i=new Intent(LandingActivity.this,Registration_2_Activity.class);
+                Intent i=new Intent(LandingActivity.this,RegistrationActivity.class);
                 startActivity(i);
             }
         });

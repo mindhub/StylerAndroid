@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
+    android:background="@drawable/bg_splash"
     android:layout_height="match_parent">
     <RelativeLayout
         android:layout_width="match_parent"
@@ -14,6 +15,122 @@
 
             android:layout_height="80dp" />
 
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_below="@id/logolayout"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:background="@color/grey_white"
+        android:layout_marginTop="20dp"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_width="match_parent"
+
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="40dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:id="@+id/layout1"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:text="@string/desigener_brands"
+                    android:id="@+id/text_designerbrands"
+                    android:textColor="@color/black"
+                    android:layout_height="wrap_content" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/view_rectangle_border"
+                    android:layout_height="50dp">
+                    <com.mindbees.stylerapp.UTILS.MultiSpinner
+                        android:layout_width="match_parent"
+                       android:layout_margin="5sp"
+                        android:id="@+id/spinDesigner"
+                        android:layout_height="match_parent">
+
+                    </com.mindbees.stylerapp.UTILS.MultiSpinner>
+
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:id="@+id/layout2"
+                android:layout_marginTop="10dp"
+                android:layout_below="@+id/layout1"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:text="@string/style_icons"
+                    android:id="@+id/text_style_icons"
+                    android:textColor="@color/black"
+                    android:layout_height="wrap_content" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/view_rectangle_border"
+                    android:layout_height="50dp">
+                    <com.mindbees.stylerapp.UTILS.MultiSpinner
+                        android:layout_width="match_parent"
+                        android:layout_margin="5sp"
+                        android:id="@+id/spinStyleIcons"
+                        android:layout_height="match_parent">
+
+                    </com.mindbees.stylerapp.UTILS.MultiSpinner>
+
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:id="@+id/layout3"
+                android:layout_marginTop="10dp"
+                android:layout_below="@+id/layout2"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:text="@string/never_go"
+                    android:id="@+id/text_never_go"
+                    android:textColor="@color/black"
+                    android:layout_height="wrap_content" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/view_rectangle_border"
+                    android:layout_height="50dp">
+                    <com.mindbees.stylerapp.UTILS.MultiSpinner
+                        android:layout_width="match_parent"
+                        android:layout_margin="5sp"
+                        android:id="@+id/spinnevergo"
+                        android:layout_height="match_parent">
+
+                    </com.mindbees.stylerapp.UTILS.MultiSpinner>
+
+                </LinearLayout>
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:id="@+id/nextButton"
+        android:layout_alignParentBottom="true"
+        android:layout_height="80dp">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_centerInParent="true"
+            android:id="@+id/register_next"
+            android:src="@drawable/ic_register_next"
+            android:layout_height="wrap_content" />
 
     </RelativeLayout>
 </RelativeLayout>
