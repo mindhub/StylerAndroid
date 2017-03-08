@@ -3,6 +3,7 @@ package com.mindbees.stylerapp.UTILS.Retrofit;
 import android.content.Context;
 
 
+import com.mindbees.stylerapp.UTILS.Urls;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -30,7 +31,7 @@ public class ServiceGenerator {
 
     private static Retrofit.Builder builder =
             new Retrofit.Builder()
-//                   .baseUrl(Urls.BASE_URL)
+                   .baseUrl(Urls.BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create());
 
     public static <S> S createService(Class<S> serviceClass, Context context) {

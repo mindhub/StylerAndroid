@@ -1,6 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.mindbees.stylerapp">
-
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <application
         android:name=".App.Styler"
         android:allowBackup="true"
@@ -8,6 +13,12 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity
+            android:name="eu.janmuller.android.simplecropimage.CropImage"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateHidden" />
         <activity android:name=".UI.Splash.SplashActivity"
 
             android:screenOrientation="portrait"
@@ -23,7 +34,23 @@
             android:theme="@style/AppTheme">
 
         </activity>
+        <activity android:name=".UI.Landing.RegistrationActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme">
 
+        </activity>
+        <activity android:name=".UI.Landing.Registration_2_Activity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme">
+
+        </activity>
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDBH5nr9HNrBfWlqsLGeXS1vs5B__8XQv4" />
     </application>
 
 </manifest>

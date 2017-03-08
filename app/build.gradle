@@ -39,5 +39,10 @@ dependencies {
     compile("com.quickblox:quickblox-android-sdk-chat:2.5.1@aar") {
         transitive=true
     }
+    compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
+    compile 'com.android.support.constraint:constraint-layout:1.0.1'
+    compile 'com.google.android.gms:play-services-location:8.1.0'
+    compile 'com.google.maps.android:android-maps-utils:0.3.4'
+    compile project(':simple-crop-image-lib')
 }

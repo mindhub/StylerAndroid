@@ -1,10 +1,16 @@
 package com.mindbees.stylerapp.UTILS;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Environment;
+import android.provider.SyncStateContract;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
+
+import java.io.File;
 
 public class Util {
     private SharedPreferences sharedPreferences;
@@ -97,5 +103,25 @@ public class Util {
     }
     public boolean isPrefExists(String key) {
         return sharedPreferences.contains(key);
+    }
+    public static File createFile(Context context){
+        File mFileTemp;
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            mFileTemp = new File(Environment.getExternalStorageDirectory(), Constants.TEMP_PHOTO_FILE);
+        }
+        else {
+            mFileTemp = new File(context.getFilesDir(), Constants.TEMP_PHOTO_FILE);
+        }
+        return mFileTemp;
+    }
+    public static  void hideSoftKeyboard(Activity activity) {
+        try {
+            InputMethodManager inputMethodManager = (InputMethodManager)  activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }
