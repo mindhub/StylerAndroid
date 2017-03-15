@@ -11,4 +11,6 @@ public class Urls {
 
     public static final String ETHNICITY_URL="v1/getEthinicity";
     public static final String TRIBES_URL="v1/getTribes";
+    public static final String REGISTER_URL="v1/register";
+    public static final String FB_SIGN_IN_URL="v1/facebooklogin";
 }

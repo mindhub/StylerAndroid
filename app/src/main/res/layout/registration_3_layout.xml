@@ -48,17 +48,26 @@
                     android:layout_width="match_parent"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/view_rectangle_border"
-                    android:layout_height="50dp">
-                    <com.mindbees.stylerapp.UTILS.MultiSpinner
+                    android:layout_height="wrap_content">
+                    <EditText
                         android:layout_width="match_parent"
-                       android:layout_margin="5sp"
-                        android:id="@+id/spinDesigner"
-                        android:layout_height="match_parent">
+                        android:id="@+id/editfavourite_Designer"
+                        android:background="@android:color/transparent"
 
-                    </com.mindbees.stylerapp.UTILS.MultiSpinner>
+                        android:minHeight="50dp"
+                        android:layout_height="wrap_content" />
+                    <!--<com.mindbees.stylerapp.UTILS.MultiSpinner-->
+                        <!--android:layout_width="match_parent"-->
+                       <!--android:layout_margin="5sp"-->
+                        <!--android:id="@+id/spinDesigner"-->
+                        <!--android:layout_height="match_parent">-->
+
+                    <!--</com.mindbees.stylerapp.UTILS.MultiSpinner>-->
 
                 </LinearLayout>
             </LinearLayout>
+
+            
             <LinearLayout
                 android:layout_width="match_parent"
                 android:id="@+id/layout2"
@@ -76,14 +85,21 @@
                     android:layout_width="match_parent"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/view_rectangle_border"
-                    android:layout_height="50dp">
-                    <com.mindbees.stylerapp.UTILS.MultiSpinner
+                    android:layout_height="wrap_content">
+                    <EditText
                         android:layout_width="match_parent"
-                        android:layout_margin="5sp"
-                        android:id="@+id/spinStyleIcons"
-                        android:layout_height="match_parent">
+                        android:id="@+id/editstyle_icons"
+                        android:background="@android:color/transparent"
 
-                    </com.mindbees.stylerapp.UTILS.MultiSpinner>
+                        android:minHeight="50dp"
+                        android:layout_height="wrap_content" />
+                    <!--<com.mindbees.stylerapp.UTILS.MultiSpinner-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_margin="5sp"-->
+                        <!--android:id="@+id/spinStyleIcons"-->
+                        <!--android:layout_height="match_parent">-->
+
+                    <!--</com.mindbees.stylerapp.UTILS.MultiSpinner>-->
 
                 </LinearLayout>
             </LinearLayout>
@@ -104,19 +120,54 @@
                     android:layout_width="match_parent"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/view_rectangle_border"
-                    android:layout_height="50dp">
-                    <com.mindbees.stylerapp.UTILS.MultiSpinner
+                    android:layout_height="wrap_content">
+                    <EditText
                         android:layout_width="match_parent"
-                        android:layout_margin="5sp"
-                        android:id="@+id/spinnevergo"
-                        android:layout_height="match_parent">
+                        android:id="@+id/editnever_go"
+                        android:background="@android:color/transparent"
 
-                    </com.mindbees.stylerapp.UTILS.MultiSpinner>
+                        android:minHeight="50dp"
+                        android:layout_height="wrap_content" />
+                    <!--<com.mindbees.stylerapp.UTILS.MultiSpinner-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_margin="5sp"-->
+                        <!--android:id="@+id/spinnevergo"-->
+                        <!--android:layout_height="match_parent">-->
+
+                    <!--</com.mindbees.stylerapp.UTILS.MultiSpinner>-->
 
                 </LinearLayout>
             </LinearLayout>
 
+            <!--<LinearLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:background="@color/white"-->
+                <!--android:layout_below="@+id/layout1"-->
+                <!--android:layout_height="200dp">-->
+                <!--<LinearLayout-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_margin="10dp"-->
+                    <!--android:background="@drawable/rectangle_2"-->
+                    <!--android:layout_height="40dp">-->
+                    <!--<RelativeLayout-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="match_parent">-->
+                        <!--<EditText-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:padding="10dp"-->
+                            <!--android:background="@android:color/transparent"-->
+                            <!--android:layout_height="match_parent" />-->
+                        <!--<ImageView-->
+                            <!--android:layout_width="40dp"-->
+                            <!--android:background="@color/black"-->
+                            <!--android:layout_alignParentRight="true"-->
+                            <!--android:src="@android:drawable/ic_menu_search"-->
+                            <!--android:layout_height="match_parent" />-->
+                    <!--</RelativeLayout>-->
 
+                <!--</LinearLayout>-->
+
+            <!--</LinearLayout>-->
         </RelativeLayout>
 
     </RelativeLayout>

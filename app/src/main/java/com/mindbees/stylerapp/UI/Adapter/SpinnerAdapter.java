@@ -3,6 +3,7 @@ package com.mindbees.stylerapp.UI.Adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Typeface;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -45,7 +46,7 @@ public class SpinnerAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
     @Override
@@ -57,8 +58,11 @@ public class SpinnerAdapter extends BaseAdapter {
         if (v == null) {
             v = LayoutInflater.from(parent.getContext()).inflate(R.layout.spinner_item, null);
             holder = new ViewHolder();
-
+            Typeface typeface=Typeface.createFromAsset(_activity.getAssets(),"fonts/brandon_grotesque_bold.ttf");
+            Typeface typeface1=Typeface.createFromAsset(_activity.getAssets(),"fonts/BrandonGrotesque-Regular.ttf");
             holder.tvtitle = (TextView) v.findViewById(R.id.textspinner);
+
+            holder.tvtitle.setTypeface(typeface);
 //            holder.ivselector = (ImageView) v.findViewById(R.id.imgSelector);
 //			holder.imgShop = (ImageView) v.findViewById(R.id.categryIcon);
 
@@ -80,8 +84,10 @@ public class SpinnerAdapter extends BaseAdapter {
         if (v == null) {
             v = LayoutInflater.from(parent.getContext()).inflate(R.layout.row, null);
             holder = new ViewHolder();
-
+            Typeface typeface=Typeface.createFromAsset(_activity.getAssets(),"fonts/brandon_grotesque_bold.ttf");
+            Typeface typeface1=Typeface.createFromAsset(_activity.getAssets(),"fonts/BrandonGrotesque-Regular.ttf");
             holder.tvtitle = (TextView) v.findViewById(R.id.company);
+            holder.tvtitle.setTypeface(typeface);
 //            holder.ivselector = (ImageView) v.findViewById(R.id.imgSelector);
 //			holder.imgShop = (ImageView) v.findViewById(R.id.categryIcon);
 

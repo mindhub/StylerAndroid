@@ -49,15 +49,39 @@
             android:layout_marginLeft="10dp"
             android:layout_marginBottom="30dp"
             android:layout_below="@+id/tribe_image_layout"
-            android:layout_height="50dp">
-            <android.support.v7.widget.AppCompatSpinner
+            android:layout_height="wrap_content">
+            <TextView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:id="@+id/style_select_text"
+                android:text="Please Select your style tribe"
+                android:textColor="@color/black"
+                android:textAllCaps="true"
+
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"/>
+            <EditText
+                android:id="@+id/editTexttribes"
+                android:layout_below="@+id/style_select_text"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:drawableRight="@drawable/ic_ddl_icon"
+                android:padding="5dp"
+                android:visibility="visible"
+
+
+
+                android:textColor="@color/black" />
+            <android.support.v7.widget.AppCompatSpinner
+                android:layout_below="@+id/style_select_text"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
 
                 android:id="@+id/spinnertribes"
                 android:ems="10"
 
+
                 android:overlapAnchor="false"
+                android:visibility="invisible"
                 style="@style/spinner_style"
                 android:dropDownWidth="match_parent"
                 android:singleLine="true"
@@ -67,12 +91,13 @@
                 >
 
             </android.support.v7.widget.AppCompatSpinner>
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_alignParentBottom="true"
-                android:background="@color/black"
 
-                android:layout_height="1dp" />
+            <!--<ImageView-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_alignParentBottom="true"-->
+                <!--android:background="@color/black"-->
+
+                <!--android:layout_height="1dp" />-->
 
         </RelativeLayout>
 

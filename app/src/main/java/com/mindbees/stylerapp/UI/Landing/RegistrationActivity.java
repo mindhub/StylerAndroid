@@ -3,6 +3,7 @@ package com.mindbees.stylerapp.UI.Landing;
 import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -18,17 +20,24 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.IdRes;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatSpinner;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -52,13 +61,16 @@ import com.mindbees.stylerapp.UI.Adapter.SpinnerAdapter;
 import com.mindbees.stylerapp.UI.Base.BaseActivity;
 import com.mindbees.stylerapp.UI.Models.Ethnicity.ModelEthnicity;
 import com.mindbees.stylerapp.UI.Models.Ethnicity.Result;
+import com.mindbees.stylerapp.UI.Models.Register.ModelRegister;
 import com.mindbees.stylerapp.UI.Models.SpinnerModel;
+import com.mindbees.stylerapp.UI.PrivacyPolicy.PrivacyPolicy;
 import com.mindbees.stylerapp.UTILS.Constants;
 import com.mindbees.stylerapp.UTILS.InternalStorageContentProvider;
 import com.mindbees.stylerapp.UTILS.Retrofit.APIService;
 import com.mindbees.stylerapp.UTILS.Retrofit.ServiceGenerator;
 import com.mindbees.stylerapp.UTILS.RoundedImageView;
 import com.mindbees.stylerapp.UTILS.Util;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -77,8 +89,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.mindbees.stylerapp.R.id.cancel_action;
 import static com.mindbees.stylerapp.R.id.editTextDob;
+import static com.mindbees.stylerapp.R.id.iam;
 import static com.mindbees.stylerapp.R.id.radio;
+import static com.mindbees.stylerapp.R.id.search_edit_frame;
 import static com.mindbees.stylerapp.R.id.spinnerEthnicity;
 
 
@@ -87,6 +102,22 @@ import static com.mindbees.stylerapp.R.id.spinnerEthnicity;
  */
 
 public class RegistrationActivity extends BaseActivity implements LocationListener{
+    String Fname,Lname,Semail,Spassword,Sdob,Sloc,Slike,Sweight,Sheight,Sethnicity,Slookingfor,SuserName;
+    String gender="f";
+    TextView iam;
+    String EthnicityTitle;
+    File f;
+    String iLike="mf";
+    int pos;
+
+    String id,fbname,email,genderfb,first_name,last_name;
+    LinearLayout likemale,likefemale,likeboth;
+    TextView textlikemale,textlikefemale,textlikeboth,textheadlike;
+
+
+
+    FragmentManager mFragmentManager;
+    FragmentTransaction mFragmentTransaction;
     private static final int ACCESS_FINE_LOCATION = 0;
     private LocationManager locationManager;
     private String provider;
@@ -95,6 +126,8 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
     String cityname;
     String Lat;
     String LONG;
+    ImageView imageViewSpinner;
+    boolean others=false;
     LatLng temp;
     LatLngBounds BOUNDS_MOUNTAIN_VIEW;
     public static final int PLACE_PICKER_REQUEST = 00;
@@ -102,10 +135,13 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
     private File mFileTemp;
     LinearLayout Linearmale,Linearfemale;
     TextView textmale,textfemale,textilike,textloooking;
-    EditText editemail,editpass,editdob,editloc,editheight,editweight,editethnicity,editlookingfor;
+    EditText editemail,editpass,editdob,editloc,editheight,editweight,editethnicity,editlookingfor,editTextfirstname,editTextlastname,editTextUsername;
     AppCompatSpinner spinethnic;
+    CheckBox checkBoxprivacy;
+    TextView textViewPrivacy;
     RadioGroup rg;
     double lat,lng;
+    boolean selected=false;
     public List<SpinnerModel> listitems;
     List<Result>list;
     ArrayList<String>listelements;
@@ -117,11 +153,10 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.registration_layout);
-        setupUI(findViewById(R.id.registrationlayout));
+
         listitems=new ArrayList<SpinnerModel>();
+
         initui();
-        setupUi();
-        Getlocation();
         Initializepicker();
         if (isNetworkAvailable())
         {
@@ -131,12 +166,67 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         else {
             showToast("NETWORK NOT AVAILABLE");
         }
+        setupUi();
+        try{
+            Bundle i=getIntent().getExtras();
+            id=i.getString("id");
+            fbname=i.getString("name");
+            genderfb=i.getString("gender");
+            email=i.getString("email");
+//            first_name=i.getString("first_name");
+//            last_name=i.getString("last_name");
+            SetFb();
+
+        }catch (Exception e){}
+        Getlocation();
+
+
         Resources res = getResources();
 
 //        ArrayAdapter<String> adapter=new ArrayAdapter<String>(RegistrationActivity.this,R.layout.spinner_item,interval);
 //        adapter.setDropDownViewResource(R.layout.spinner_item);
 //        spinethnic.setAdapter(adapter);
         BOUNDS_MOUNTAIN_VIEW=new LatLngBounds(southwest,northeast);
+
+    }
+
+    private void SetFb() {
+        if(!fbname.isEmpty()) {
+//            editTextfirstname.setText(fbname);
+            String[]Splitted=fbname.split("\\s");
+            editTextfirstname.setText(Splitted[0]);
+            editTextlastname.setText(Splitted[1]);
+        }
+//        if(!last_name.isEmpty()) {
+//            editTextlastname.setText(fbname);
+//        }
+        showToast(email);
+        if (!email.isEmpty()){
+         editemail.setText(email);
+      }
+
+       editpass.setVisibility(View.GONE);
+        if (!gender.isEmpty())
+        {
+            if (gender.equals("f"))
+           {
+                Linearfemale.setBackgroundColor(getResources().getColor(R.color.black));
+                textfemale.setTextColor(getResources().getColor(R.color.white));
+                Linearmale.setBackgroundColor(getResources().getColor(R.color.white));
+                textmale.setTextColor(getResources().getColor(R.color.black));
+                gender="f";
+            }
+            else {
+                Linearmale.setBackgroundColor(getResources().getColor(R.color.black));
+                textmale.setTextColor(getResources().getColor(R.color.white));
+                Linearfemale.setBackgroundColor(getResources().getColor(R.color.white));
+                textfemale.setTextColor(getResources().getColor(R.color.black));
+                gender="m";
+            }
+
+        }
+       String user_photo="https://graph.facebook.com/" + id + "/picture?type=large";
+        Picasso.with(this).load(user_photo).into(userpic);
 
     }
 
@@ -159,6 +249,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                         model2.setName("ETHNICITY");
                         listitems.add(model2);
 
+
                         for(int i=0;i<list.size();i++)
                         {
                             SpinnerModel model1=new SpinnerModel();
@@ -170,6 +261,9 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
 //                        ArrayAdapter<String> adapter=new ArrayAdapter<String>(RegistrationActivity.this,R.layout.spinner_item,items);
 //                        adapter.setDropDownViewResource(R.layout.spinner_item);
 //                        spinethnic.setAdapter(adapter);
+                        SpinnerModel model3=new SpinnerModel();
+                        model3.setName("OTHERS");
+                        listitems.add(model3);
                         SpinnerAdapter adapter=new SpinnerAdapter(RegistrationActivity.this,listitems);
                         spinethnic.setAdapter(adapter);
                     }
@@ -187,12 +281,36 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
 
     private void setupUi() {
         editlookingfor.setFocusable(false);
+        editTextfirstname.setFocusable(false);
+        editTextlastname.setFocusable(false);
         editethnicity.setFocusable(false);
         editemail.setFocusable(false);
         editpass.setFocusable(false);
         editloc.setFocusable(false);
         editheight.setFocusable(false);
         editweight.setFocusable(false);
+        editTextUsername.setFocusable(false);
+        editTextUsername.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                editTextUsername.setFocusableInTouchMode(true);
+                return false;
+            }
+        });
+        editTextfirstname.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                editTextfirstname.setFocusableInTouchMode(true);
+                return false;
+            }
+        });
+        editTextlastname.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                editTextlastname.setFocusableInTouchMode(true);
+                return false;
+            }
+        });
         editemail.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -235,6 +353,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                 textmale.setTextColor(getResources().getColor(R.color.white));
                 Linearfemale.setBackgroundColor(getResources().getColor(R.color.white));
                 textfemale.setTextColor(getResources().getColor(R.color.black));
+                gender="m";
 
             }
         });
@@ -245,6 +364,44 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                 textfemale.setTextColor(getResources().getColor(R.color.white));
                 Linearmale.setBackgroundColor(getResources().getColor(R.color.white));
                 textmale.setTextColor(getResources().getColor(R.color.black));
+                gender="f";
+            }
+        });
+        likemale.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                textlikemale.setTextColor(getResources().getColor(R.color.white));
+                likemale.setBackgroundColor(getResources().getColor(R.color.black));
+
+                likefemale.setBackgroundColor(getResources().getColor(R.color.white));
+                likeboth.setBackgroundColor(getResources().getColor(R.color.white));
+                textlikeboth.setTextColor(getResources().getColor(R.color.black));
+                textlikefemale.setTextColor(getResources().getColor(R.color.black));
+                iLike="m";
+            }
+        });
+        likefemale.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                likefemale.setBackgroundColor(getResources().getColor(R.color.black));
+                textlikefemale.setTextColor(getResources().getColor(R.color.white));
+                likemale.setBackgroundColor(getResources().getColor(R.color.white));
+                likeboth.setBackgroundColor(getResources().getColor(R.color.white));
+                textlikeboth.setTextColor(getResources().getColor(R.color.black));
+                textlikemale.setTextColor(getResources().getColor(R.color.black));
+                iLike="f";
+            }
+        });
+        likeboth.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                likeboth.setBackgroundColor(getResources().getColor(R.color.black));
+                textlikeboth.setTextColor(getResources().getColor(R.color.white));
+                likemale.setBackgroundColor(getResources().getColor(R.color.white));
+                likefemale.setBackgroundColor(getResources().getColor(R.color.white));
+                textlikemale.setTextColor(getResources().getColor(R.color.black));
+                textlikefemale.setTextColor(getResources().getColor(R.color.black));
+                iLike="mf";
             }
         });
         picedit.setOnClickListener(new View.OnClickListener() {
@@ -261,13 +418,13 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
             public void onClick(View v) {
                 final Calendar calender=Calendar.getInstance(TimeZone.getDefault());
                 int Year=calender.get(Calendar.YEAR);
-                int Month=calender.get(Calendar.MONTH);
+                final int Month=calender.get(Calendar.MONTH);
                 int Date=calender.get(Calendar.DAY_OF_MONTH);
                 DatePickerDialog datepicker=new DatePickerDialog(RegistrationActivity.this, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
 
-                       editdob.setText(dayOfMonth+"/"+(month+1)+"/"+year);
+                       editdob.setText(year+"-"+(month+1)+"-"+dayOfMonth);
 
 
 
@@ -294,24 +451,109 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                 }
             }
         });
+        textViewPrivacy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mFragmentManager = getSupportFragmentManager();
+                mFragmentTransaction = mFragmentManager.beginTransaction();
+                PrivacyPolicy privacyPolicy=PrivacyPolicy.newInstance();
+                privacyPolicy.show(mFragmentTransaction,"POP_UP_PRIVACY");
+            }
+        });
 
-//        spinethnic.performClick();
-//        editethnicity.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                spinethnic.setVisibility(View.VISIBLE);
-//
-//
-//            }
-//        });
+        editethnicity.setText("ETHNICITY");
+        editethnicity.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
+                    View view = getCurrentFocus();
+                    if (view != null) {
+                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    }
+
+                }
+                return false;
+
+            }
+        });
+        imageViewSpinner.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editethnicity.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        editethnicity.setFocusable(false);
+
+                        editethnicity.setFocusableInTouchMode(false);
+                        editethnicity.setOnTouchListener(new View.OnTouchListener() {
+                            @Override
+                            public boolean onTouch(View v, MotionEvent event) {
+                                editethnicity.setFocusableInTouchMode(false);
+                                return false;
+                            }
+                        });
+                    }
+                });
+                editethnicity.setText("ETHNICITY");
+                others=false;
+                spinethnic.setVisibility(View.VISIBLE);
+                spinethnic.performClick();
+                selected=true;
+
+
+            }
+        });
+
         spinethnic.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position!=0) {
-                    String name = list.get(position).getEthnicityTitle();
-//                    editethnicity.setText(name);
-//                    spinethnic.setVisibility(View.GONE);
-                }
+                pos=position;
+              if(selected) {
+                  if(position!=0) {
+                      if(!listitems.get(position).getName().equals("OTHERS")){
+
+                          EthnicityTitle = list.get(position - 1).getEthnicityId();
+                          String name = list.get(position - 1).getEthnicityTitle();
+//                    showToast(EthnicityTitle);
+                          editethnicity.setText(name);
+                          spinethnic.setVisibility(View.INVISIBLE);
+                          selected = false;
+                      }
+                      else {
+                          spinethnic.setVisibility(View.INVISIBLE);
+                          others=true;
+
+                          editethnicity.post(new Runnable() {
+                              @Override
+                              public void run() {
+                                  editethnicity.setFocusable(true);
+
+                                  editethnicity.setFocusableInTouchMode(true);
+                                  editethnicity.requestFocus();
+                                  InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                                  imm.showSoftInput(editethnicity, InputMethodManager.SHOW_IMPLICIT);
+                              }
+                          });
+
+                          editethnicity.setHint("Please Specify");
+                          editethnicity.setText("");
+                          editethnicity.setOnTouchListener(new View.OnTouchListener() {
+                              @Override
+                              public boolean onTouch(View v, MotionEvent event) {
+                                  editethnicity.setFocusableInTouchMode(true);
+                                  return false;
+                              }
+                          });
+
+
+
+
+                      }
+                  }
+              }
+
+
             }
 
             @Override
@@ -319,14 +561,290 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
 
             }
         });
+        editethnicity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!others) {
+                    spinethnic.setVisibility(View.VISIBLE);
+
+
+                    spinethnic.performClick();
+
+                    selected = true;
+                }
+
+
+
+            }
+        });
+//        rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+//                int pos=rg.indexOfChild(findViewById(checkedId));
+//                switch (pos)
+//                {
+//                    case 0:iLike="m";
+//                        break;
+//                    case 1:iLike="f";
+//                        break;
+//                    case 2:iLike="mf";
+//                        break;
+//                    default:
+//                        iLike="m";
+//                        break;
+//                }
+//
+//
+//            }
+//        });
         reg_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(RegistrationActivity.this,Registration_2_Activity.class);
-                startActivity(intent);
+//                Intent intent=new Intent(RegistrationActivity.this,Registration_2_Activity.class);
+//                startActivity(intent);
+                checkRegistration();
             }
         });
 
+    }
+
+    private void checkRegistration() {
+        if(checkname()&&checklastname()&&checkUsername()&&checkemail()&&checkpassword()&&checkdob()&&checkloc()&&checkheight()&&checkweight()&&checkethnicity()&&checkrequired()&&checkprivacy())
+        {
+//            submitreg();
+            showToast(iLike);
+        }
+    }
+
+    private boolean checkUsername() {
+        SuserName=editTextUsername.getText().toString().trim();
+        if (SuserName.isEmpty())
+        {
+            editTextUsername.setError("Please enter user name");
+            editTextUsername.post(new Runnable() {
+                @Override
+                public void run() {
+                    editTextUsername.requestFocus();
+                    editTextUsername.setFocusable(true);
+                    editTextUsername.setFocusableInTouchMode(true);
+                }
+            });
+
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+
+    }
+
+    private boolean checkpassword() {
+        Spassword=editpass.getText().toString().trim();
+        if (id.isEmpty()) {
+            if (Spassword.isEmpty()) {
+                editpass.setError("Please enter valid password");
+                editpass.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        editpass.setFocusable(true);
+                        editpass.setFocusableInTouchMode(true);
+                        editpass.requestFocus();
+                    }
+                });
+
+                return false;
+            } else {
+                if (Spassword.length() < 6) {
+                    editpass.setError("Password length must be greater than 6");
+                    editpass.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            editpass.setFocusable(true);
+                            editpass.setFocusableInTouchMode(true);
+                            editpass.requestFocus();
+                        }
+                    });
+                    return false;
+
+                } else {
+                    return true;
+                }
+            }
+        }
+        else {
+            return true;
+        }
+    }
+
+    private boolean checklastname() {
+        Lname=editTextlastname.getText().toString().trim();
+        if (Lname.isEmpty())
+        {
+            editTextlastname.setError("Please enter Last name");
+            editTextlastname.post(new Runnable() {
+                @Override
+                public void run() {
+                    editTextlastname.setFocusable(true);
+                    editTextlastname.setFocusableInTouchMode(true);
+                    editTextlastname.requestFocus();
+                }
+            });
+
+            return false;
+        }
+       else
+        {
+            return true;
+        }
+    }
+
+    private boolean checkprivacy() {
+        if (checkBoxprivacy.isChecked())
+        {
+            return true;
+        }
+        else {
+            showSnackBar("Please Accept Privacy Policy",false);
+            return false;
+        }
+    }
+
+
+
+    private boolean checkrequired() {
+        Slookingfor=editlookingfor.getText().toString().trim();
+
+
+        return true;
+    }
+
+    private boolean checkethnicity() {
+//        Sethnicity=listitems.get(pos).getName();
+        Sethnicity=editethnicity.getText().toString().trim();
+        if (Sethnicity.equals("ETHNICITY"))
+        {
+            showSnackBar("Please Select EThnicity",false);
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+
+
+    }
+
+    private boolean checkheight() {
+        Sheight=editheight.getText().toString().trim();
+//        if (Sheight.isEmpty())
+//        {
+//            editheight.setError("please Enter Weight");
+//            return false;
+//        }
+
+//        else
+//        {
+            return true;
+//        }
+    }
+
+    private boolean checkweight() {
+        Sweight=editweight.getText().toString().trim();
+//        if (Sweight.isEmpty())
+//        {
+//            editweight.setError("please enter weight");
+//            return false;
+//        }
+//        else
+//        {
+            return true;
+//        }
+    }
+
+    private boolean checkloc() {
+        Sloc=editloc.getText().toString().trim();
+        if (Sloc.isEmpty())
+        {
+            editloc.setError("please select location");
+            editloc.requestFocus();
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    private boolean checkdob() {
+        Sdob=editdob.getText().toString().trim();
+        if (Sdob.isEmpty())
+        {
+            editdob.setError("please select date of Birth");
+            editdob.requestFocus();
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    private boolean checkemail() {
+        Semail=editemail.getText().toString().trim();
+        if (Semail.isEmpty())
+        {
+            editemail.setError("please enter Valid email");
+            editemail.post(new Runnable() {
+                @Override
+                public void run() {
+                    editemail.setFocusable(true);
+                    editemail.setFocusableInTouchMode(true);
+                    editemail.requestFocus();
+                }
+            });
+
+            return false;
+        }
+        else {
+            if (isValidEmail(Semail))
+            {
+                return true;
+            }
+            else {
+                editemail.setError("please enter Valid email");
+                editemail.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        editemail.setFocusable(true);
+                        editemail.setFocusableInTouchMode(true);
+                        editemail.requestFocus();
+                    }
+                });
+                return false;
+            }
+        }
+    }
+
+    private boolean checkname() {
+        Fname=editTextfirstname.getText().toString().trim();
+        if (Fname.isEmpty())
+        {
+            editTextfirstname.setError("Please Enter first name");
+            editTextfirstname.post(new Runnable() {
+                @Override
+                public void run() {
+                    editTextfirstname.setFocusable(true);
+                    editTextfirstname.setFocusableInTouchMode(true);
+                    editTextfirstname.requestFocus();
+                }
+            });
+
+            return false;
+        }
+        else {
+            return true;
+        }
     }
 
     @Override
@@ -336,6 +854,11 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         String[] PERMISSIONS = {Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
         if(!hasPermissions(this, PERMISSIONS)){
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
+        }
+        if (others)
+        {
+            editethnicity.setFocusable(true);
+
         }
 
     }
@@ -351,6 +874,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
     }
     private void initui() {
         userpic= (RoundedImageView) findViewById(R.id.user_profilepic);
+        iam= (TextView) findViewById(R.id.iam);
         picedit= (ImageView) findViewById(R.id.imageEdit);
         Linearfemale= (LinearLayout) findViewById(R.id.layout_female);
         Linearmale= (LinearLayout) findViewById(R.id.layout_male);
@@ -369,7 +893,100 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         editlookingfor= (EditText) findViewById(R.id.editTextiamLookingfor);
         spinethnic= (AppCompatSpinner) findViewById(R.id.spinnerEthnicity);
         reg_next= (ImageView) findViewById(R.id.register_next);
+        editTextfirstname= (EditText) findViewById(R.id.editextfirstName);
+        editTextlastname= (EditText) findViewById(R.id.editextlastname);
+        checkBoxprivacy= (CheckBox) findViewById(R.id.checkboxPrivacy);
+        textViewPrivacy= (TextView) findViewById(R.id.textprivacypolicy);
+        Typeface typeface=Typeface.createFromAsset(getAssets(),"fonts/brandon_grotesque_bold.ttf");
+        Typeface typeface1=Typeface.createFromAsset(getAssets(),"fonts/BrandonGrotesque-Regular.ttf");
+        textilike.setTypeface(typeface1);
+        textloooking.setTypeface(typeface1);
+        editTextfirstname.setTypeface(typeface1);
+        editTextlastname.setTypeface(typeface1);
+        editemail.setTypeface(typeface1);
+        editpass.setTypeface(typeface1);
+        editdob.setTypeface(typeface1);
+        editloc.setTypeface(typeface1);
+        editheight.setTypeface(typeface1);
+        editweight.setTypeface(typeface1);
+        editlookingfor.setTypeface(typeface1);
+        iam.setTypeface(typeface1);
+        editethnicity.setTypeface(typeface1);
+        likemale= (LinearLayout) findViewById(R.id.layout_like_male);
+        likefemale= (LinearLayout) findViewById(R.id.layout_like_female);
+        likeboth= (LinearLayout) findViewById(R.id.layout_like_both);
+        textlikemale= (TextView) findViewById(R.id.text_like_Male);
+        textlikefemale= (TextView) findViewById(R.id.text_like_female);
+        textlikeboth= (TextView) findViewById(R.id.text_like_both);
+        textheadlike= (TextView) findViewById(R.id.ilike);
+        textlikeboth.setTypeface(typeface);
+        textlikefemale.setTypeface(typeface);
+        textlikemale.setTypeface(typeface);
+        textheadlike.setTypeface(typeface1);
+        imageViewSpinner= (ImageView) findViewById(R.id.imageSpinner);
+        editTextUsername= (EditText) findViewById(R.id.editTextusername);
+        editTextUsername.setTypeface(typeface1);
 
+    }
+    private void submitreg() {
+        final ProgressDialog pd = new ProgressDialog(this);
+        pd.setMessage("Loading");
+        pd.setCancelable(false);
+        pd.show();
+
+        HashMap<String, String> params = new HashMap<>();
+        params.put("user_email",Semail);
+
+        params.put("full_name",Fname);
+        params.put("dob",Sdob);
+        if (!id.isEmpty())
+        {
+            params.put("fb_id",id);
+        }
+        else {
+            params.put("user_password",Spassword);
+        }
+        params.put("location",cityname);
+        params.put("latitude",Lat);
+        params.put("longitude",LONG);
+        params.put("gender",gender);
+        params.put("height",Sheight);
+        params.put("ethnicity_id",EthnicityTitle);
+        params.put("weight",Sweight);
+//        params.put("looking_for",Slookingfor);
+        params.put("preference",iLike);
+        APIService service = ServiceGenerator.createService(APIService.class, RegistrationActivity.this);
+        Call<ModelRegister>call=service.register(params);
+        call.enqueue(new Callback<ModelRegister>() {
+            @Override
+            public void onResponse(Call<ModelRegister> call, Response<ModelRegister> response) {
+                if (response.isSuccessful())
+                { if (pd.isShowing()) { pd.dismiss(); }
+                    if (response.body()!=null&&response.body().getResult()!=null)
+                    {
+                        ModelRegister register=response.body();
+                        String msg=register.getResult().getMessage();
+                        String id=register.getResult().getUserId();
+                        int value=register.getResult().getValue();
+                        if (value==1)
+                        {
+                            savePref(Constants.USER_ID,id);
+                            savePref(Constants.EMAIL_REGISTRATION,true);
+                        }
+                        else
+                        {
+                            showToast("msg");
+                        }
+
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ModelRegister> call, Throwable t) {
+                if (pd.isShowing()) { pd.dismiss(); }
+            }
+        });
     }
     void pickPhotoDialog() {
         String[] item = { "Take Picture", "Upload From Library" };
@@ -542,7 +1159,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                     temp=  place.getLatLng();
                     Lat=String.valueOf(temp.latitude);
                     LONG=String.valueOf(temp.longitude);
-                    Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
+//                    Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
                 }
                 else {
                     super.onActivityResult(requestCode, resultCode, data);
@@ -563,8 +1180,8 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
     public void bimapTofile(Bitmap bitmap) throws IOException{
 
         //create a file to write bitmap data
-        File f =new  File(Environment.getExternalStorageDirectory()
-                + File.separator + "STYLER"+File.separator+"Images"+File.separator+"Profile"+File.separator+Constants.TEMP_PHOTO_FILE);
+         f =new  File(Environment.getExternalStorageDirectory()
+                + File.separator + Constants.TEMP_PHOTO_FILE);
         f.createNewFile();
 
         //Convert bitmap to byte array
@@ -580,6 +1197,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
 
         fos.flush();
         fos.close();
+
 
 //        UploadImageTask(f);
     }

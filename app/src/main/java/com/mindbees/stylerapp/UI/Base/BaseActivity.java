@@ -91,9 +91,9 @@ public class BaseActivity extends AppCompatActivity {
         TextView textView = (TextView) view.findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(Color.WHITE);
         if (isSuccess){
-            view.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+            view.setBackgroundColor(getResources().getColor(R.color.green_button));
         }else {
-//             view.setBackgroundColor(getResources().getColor(R.color.expired_orange));
+            view.setBackgroundColor(getResources().getColor(R.color.red_orange));
         }
 
         snackbar.show();

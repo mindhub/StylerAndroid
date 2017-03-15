@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "C:\\Users\\User\\AndroidStudioProjects\\STYLERAPP\\Q-municate_core\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout-v21\\notification_template_custom_big.xml",
+        "source": "C:\\Users\\User\\.android\\build-cache\\d0ee9f849342446c3ba474470db5528fef075f19\\output\\res\\layout-v21\\notification_template_custom_big.xml"
+    },
+    {
+        "merged": "C:\\Users\\User\\AndroidStudioProjects\\STYLERAPP\\Q-municate_core\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout-v21\\notification_action_tombstone.xml",
+        "source": "C:\\Users\\User\\.android\\build-cache\\d0ee9f849342446c3ba474470db5528fef075f19\\output\\res\\layout-v21\\notification_action_tombstone.xml"
+    },
+    {
+        "merged": "C:\\Users\\User\\AndroidStudioProjects\\STYLERAPP\\Q-municate_core\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout-v21\\notification_template_icon_group.xml",
+        "source": "C:\\Users\\User\\.android\\build-cache\\d0ee9f849342446c3ba474470db5528fef075f19\\output\\res\\layout-v21\\notification_template_icon_group.xml"
+    },
+    {
+        "merged": "C:\\Users\\User\\AndroidStudioProjects\\STYLERAPP\\Q-municate_core\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout-v21\\notification_action.xml",
+        "source": "C:\\Users\\User\\.android\\build-cache\\d0ee9f849342446c3ba474470db5528fef075f19\\output\\res\\layout-v21\\notification_action.xml"
+    }
+]

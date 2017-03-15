@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "822577491883",
+    "firebase_url": "https://styler-160705.firebaseio.com",
+    "project_id": "styler-160705",
+    "storage_bucket": "styler-160705.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:822577491883:android:d505d89f0c691a8f",
+        "android_client_info": {
+          "package_name": "com.mindbees.stylerapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "822577491883-o97nd3ogem9q6slbgesresorcjh59u5c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mindbees.stylerapp",
+            "certificate_hash": "cf3655937b24766fd12a7fd5514ac89dce070922"
+          }
+        },
+        {
+          "client_id": "822577491883-9a3ga25vm7p93ed2jaa30hib40jjnsl7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbWOvU0Hw2KHsXliqLg2nkoIk5xzKUs1c"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "822577491883-9a3ga25vm7p93ed2jaa30hib40jjnsl7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

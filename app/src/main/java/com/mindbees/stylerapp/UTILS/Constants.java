@@ -17,5 +17,8 @@ public class Constants {
     public static final String AUTH_SECRET = "pr89nmdWb2xj4ND";
     public static final String ACCOUNT_KEY = "3wJCRn6pnFvoSchpdoD3";
 
-    public static final String TEMP_PHOTO_FILE ="tempfile" ;
+    public static final String TEMP_PHOTO_FILE ="STYLER.jpg" ;
+    public static final String USER_ID = "user_id";
+    public static final String EMAIL_REGISTRATION ="email_registration" ;
+    public static final String KEY_FILTER = "key_filter";
 }

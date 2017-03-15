@@ -1,11 +1,14 @@
 package com.mindbees.stylerapp.UI.Landing;
 
 import android.app.ProgressDialog;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatSpinner;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.mindbees.stylerapp.R;
 import com.mindbees.stylerapp.UI.Adapter.SpinnerAdapter;
@@ -33,8 +36,10 @@ public class Registration_2_Activity extends BaseActivity{
     AppCompatSpinner spin;
     public List<SpinnerModel> listitems;
     List<Result>list;
-    ImageView userpic;
+    ImageView userpic,reg_next;
     SpinnerAdapter adapter;
+    TextView style;
+    EditText tribes;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,9 +76,9 @@ public class Registration_2_Activity extends BaseActivity{
                     {
                         ModelTribes modeltribes=response.body();
                         list=modeltribes.getResult();
-                        SpinnerModel model=new SpinnerModel();
-                        model.setName("Mens Tribes");
-                        listitems.add(model);
+//                        SpinnerModel model=new SpinnerModel();
+//                        model.setName("Mens Tribes");
+//                        listitems.add(model);
                         for (int i=0;i<list.size();i++)
                         {
                             SpinnerModel model2=new SpinnerModel();
@@ -96,16 +101,26 @@ public class Registration_2_Activity extends BaseActivity{
     }
 
     private void setupUI() {
+        tribes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                spin.setVisibility(View.VISIBLE);
+                spin.performClick();
+            }
+        });
+
+
         spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(position!=0)
-                {
+                tribes.setText(list.get(position).getTribeTitle());
+
                     String url=list.get(position).getTribeImg();
                     showToast(url);
                     Picasso.with(Registration_2_Activity.this).load(url+list.get(position).getTribeId()).into(userpic);
+                spin.setVisibility(View.INVISIBLE);
 
-                }
+
             }
 
             @Override
@@ -118,7 +133,17 @@ public class Registration_2_Activity extends BaseActivity{
 
     private void initUi() {
         spin= (AppCompatSpinner) findViewById(R.id.spinnertribes);
+        style= (TextView) findViewById(R.id.style_select_text);
+        tribes= (EditText) findViewById(R.id.editTexttribes);
+        tribes.setFocusable(false);
+        reg_next= (ImageView) findViewById(R.id.register_next);
+
+
         userpic= (ImageView) findViewById(R.id.image_tribes);
+        Typeface typeface=Typeface.createFromAsset(getAssets(),"fonts/brandon_grotesque_bold.ttf");
+        Typeface typeface1=Typeface.createFromAsset(getAssets(),"fonts/BrandonGrotesque-Regular.ttf");
+        style.setTypeface(typeface);
+        tribes.setTypeface(typeface1);
 
     }
 }

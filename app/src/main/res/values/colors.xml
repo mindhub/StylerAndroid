@@ -5,12 +5,14 @@
     <color name="colorAccent">#1a237e</color>
     <color name="black">#000000</color>
     <color name="white">#ffffff</color>
-    <color name="grey_white">#fed1cfcf</color>
+    <color name="grey_white">#f1f1f1</color>
 
     <color name="green_button">#a1c627</color>
+    <color name="dark_slate_blue">#76389d</color>
 
     <color name="red_orange">#E45814</color>
     <color name="menu_bg">#00477c</color>
     <color name="menu_text_color">#8cb5d4</color>
     <color name="popup_background">#002f54</color>
+
 </resources>

@@ -20,11 +20,11 @@
                         <!--android:top="3dp" />-->
                 </shape>
             </item>
-            <item>
-                <bitmap android:gravity="bottom|right"
-                    android:src="@drawable/ic_ddl_icon" />
-                // you can use any other image here, instead of default_holo_dark_am
-            </item>
+            <!--<item>-->
+                <!--<bitmap android:gravity="bottom|right"-->
+                    <!--android:src="@drawable/ic_ddl_icon" />-->
+                <!--// you can use any other image here, instead of default_holo_dark_am-->
+            <!--</item>-->
         </layer-list>
     </item>
 </selector>

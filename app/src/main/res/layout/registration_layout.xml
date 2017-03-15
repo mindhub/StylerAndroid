@@ -43,56 +43,181 @@
             android:layout_width="match_parent"
             android:layout_marginTop="60dp"
             android:layout_height="wrap_content">
-            <LinearLayout
-                android:layout_width="200dp"
-                android:weightSum="2"
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+
                 android:id="@+id/gender_layout"
-                android:orientation="horizontal"
-                android:layout_centerHorizontal="true"
+
                 android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:text="i am"
+                    android:padding="5dp"
+                    android:textSize="15dp"
+                   android:id="@+id/iam"
+                    android:textColor="@color/black"
+                    android:layout_centerVertical="true"
+                    android:layout_height="match_parent" />
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_weight="1"
-                    android:id="@+id/layout_male"
-                    android:background="@color/black"
-                    android:layout_height="40dp">
-                    <TextView
+                    android:layout_width="200dp"
+                    android:weightSum="2"
+
+                    android:layout_centerHorizontal="true"
+                    android:id="@+id/l1"
+                    android:orientation="horizontal"
+
+                    android:layout_height="wrap_content">
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:gravity="center"
-                        android:padding="10dp"
-                        android:textStyle="bold"
-                        android:textSize="15dp"
-                        android:background="@drawable/rectangle_1"
-                        android:textAllCaps="true"
-                        android:textColor="@color/white"
-                        android:layout_height="match_parent"
-                        android:text="MALE"
-                        android:id="@+id/textMale" />
+                        android:layout_weight="1"
+                        android:id="@+id/layout_female"
+                        android:background="@color/black"
+                        android:layout_height="40dp">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:gravity="center"
+                            android:padding="10dp"
+                            android:textStyle="bold"
+                            android:background="@drawable/rectangle_2"
+                            android:textAllCaps="true"
+                            android:textColor="@color/white"
+                            android:layout_height="match_parent"
+                            android:text="FEMALE"
+                            android:id="@+id/textfemale" />
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_weight="1"
+                        android:id="@+id/layout_male"
+                        android:background="@color/white"
+                        android:layout_height="40dp">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:gravity="center"
+                            android:padding="10dp"
+                            android:textStyle="bold"
+
+                            android:background="@drawable/rectangle_2"
+                            android:textAllCaps="true"
+                            android:textColor="@color/black"
+                            android:layout_height="match_parent"
+                            android:text="MALE"
+                            android:id="@+id/textMale" />
+                    </LinearLayout>
+
 
                 </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_weight="1"
-                    android:id="@+id/layout_female"
-                    android:background="@color/white"
-                    android:layout_height="40dp">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:gravity="center"
-                        android:padding="10dp"
-                        android:textStyle="bold"
-                        android:textSize="15dp"
-                        android:background="@drawable/rectangle_1"
-                        android:textAllCaps="true"
-                        android:textColor="@color/black"
-                        android:layout_height="match_parent"
-                        android:text="FEMALE"
-                        android:id="@+id/textfemale" />
-                </LinearLayout>
-            </LinearLayout>
+
+
+            </RelativeLayout>
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_below="@+id/gender_layout"
+                android:layout_marginTop="10dp"
+                android:id="@+id/like_layout"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:text="i like"
+                    android:padding="5dp"
+                    android:textSize="15dp"
+                    android:id="@+id/ilike"
+                    android:textColor="@color/black"
+                    android:layout_centerVertical="true"
+                    android:layout_height="match_parent" />
+                <LinearLayout
+                    android:layout_width="200dp"
+                    android:weightSum="3"
+
+                    android:layout_centerHorizontal="true"
+                    android:id="@+id/l2"
+                    android:orientation="horizontal"
+                    android:background="@drawable/rectangle_2"
+
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="1dp"
+                        android:layout_marginTop="1dp"
+                        android:layout_marginBottom="1dp"
+                        android:id="@+id/layout_like_female"
+                        android:background="@color/white"
+                        android:layout_height="40dp">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:gravity="center"
+
+                            android:textStyle="bold"
+
+                            android:textAllCaps="true"
+                            android:textColor="@color/black"
+                            android:layout_height="match_parent"
+                            android:text="FEMALE"
+                            android:id="@+id/text_like_female" />
+
+                    </LinearLayout>
+                    <View
+                        android:layout_width="1dp"
+                        android:background="@color/black"
+                        android:layout_height="match_parent"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginTop="1dp"
+                        android:layout_marginBottom="1dp"
+                        android:id="@+id/layout_like_male"
+                        android:background="@color/white"
+                        android:layout_height="40dp">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:gravity="center"
+
+                            android:textStyle="bold"
+
+
+                            android:textAllCaps="true"
+                            android:textColor="@color/black"
+                            android:layout_height="match_parent"
+                            android:text="MALE"
+                            android:id="@+id/text_like_Male" />
+                    </LinearLayout>
+                    <View
+                        android:layout_width="1dp"
+                        android:background="@color/black"
+                        android:layout_height="match_parent"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginRight="1dp"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:id="@+id/layout_like_both"
+                        android:background="@color/black"
+                        android:layout_height="40dp">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:gravity="center"
+
+                            android:textStyle="bold"
+
+
+                            android:textAllCaps="true"
+                            android:textColor="@color/white"
+                            android:layout_height="match_parent"
+                            android:text="Both"
+                            android:id="@+id/text_like_both" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_below="@+id/like_layout"
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="20dp"
                 android:id="@+id/layout1"
@@ -100,14 +225,47 @@
                 android:layout_height="wrap_content">
                 <EditText
                     android:layout_width="match_parent"
-                    android:id="@+id/editTextemail"
-                    android:hint="Email"
+                    android:id="@+id/editextfirstName"
+                    android:hint="First Name"
+                    android:inputType="textPersonName"
                     android:padding="5dp"
                     android:textColorHint="@color/black"
                     android:layout_height="50dp" />
                 <EditText
                     android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="Last Name"
+
+                    android:inputType="textPersonName"
+                    android:id="@+id/editextlastname"
+                    android:layout_below="@+id/editextfirstName"
+                    android:padding="5dp"
+                    android:textColorHint="@color/black"
+                     />
+                <EditText
+                    android:layout_width="match_parent"
+                    android:id="@+id/editTextusername"
+                    android:inputType="textPersonName"
+                    android:hint="User name"
+                    android:padding="5dp"
+                    android:textColorHint="@color/black"
+                    android:layout_below="@+id/editextlastname"
+                    android:layout_height="50dp" />
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_below="@+id/editTextusername"
+                    android:id="@+id/editTextemail"
+                    android:hint="Email"
+                    android:inputType="textEmailAddress"
+                    android:padding="5dp"
+                    android:textColorHint="@color/black"
+                    android:layout_height="50dp" />
+
+
+                <EditText
+                    android:layout_width="match_parent"
                     android:id="@+id/editTextpass"
+                    android:inputType="textPersonName"
                     android:hint="Password"
                     android:padding="5dp"
                     android:textColorHint="@color/black"
@@ -146,6 +304,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:id="@+id/layout2"
+                android:visibility="gone"
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
@@ -232,6 +391,7 @@
                         android:layout_width="match_parent"
                         android:layout_weight="1"
                         android:id="@+id/editTextHeight"
+                        android:inputType="number"
                         android:textColor="@color/black"
                         android:layout_marginRight="5dp"
                         android:hint="Height"
@@ -241,7 +401,8 @@
                     <EditText
                         android:layout_width="match_parent"
                         android:layout_marginLeft="5dp"
-                        android:text="Weight"
+                        android:hint="Weight"
+                        android:inputType="number"
                         android:padding="5dp"
                         android:id="@+id/editTextWeight"
                         android:textColor="@color/black"
@@ -261,9 +422,10 @@
                         android:id="@+id/editTextehnic"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:drawableRight="@drawable/ic_ddl_icon"
+
                         android:padding="5dp"
-                        android:visibility="gone"
+                        android:inputType="textPersonName"
+                        android:visibility="visible"
 
 
 
@@ -274,6 +436,7 @@
 
                         android:id="@+id/spinnerEthnicity"
                         android:ems="10"
+                        android:visibility="invisible"
 
                         android:overlapAnchor="false"
                         style="@style/spinner_style"
@@ -286,11 +449,13 @@
 
                     </android.support.v7.widget.AppCompatSpinner>
                     <ImageView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_alignParentBottom="true"
-                        android:background="@color/black"
+                        android:src="@drawable/ic_ddl_icon"
+                        android:layout_alignParentRight="true"
+                        android:id="@+id/imageSpinner"
 
-                        android:layout_height="1dp" />
+                        android:layout_height="match_parent" />
 
 
                 </RelativeLayout>
@@ -298,9 +463,12 @@
                     android:layout_width="match_parent"
                     android:layout_below="@+id/layoutethnicity"
                     android:orientation="vertical"
+
                     android:layout_height="wrap_content">
                     <LinearLayout
                         android:layout_width="match_parent"
+                        android:orientation="vertical"
+                        android:visibility="gone"
                         android:layout_height="wrap_content">
                         <TextView
                             android:layout_width="match_parent"
@@ -310,22 +478,56 @@
                             android:id="@+id/textiamlookingfor"
                             android:textSize="16dp"
                             android:layout_height="wrap_content" />
-
-                    </LinearLayout>
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_marginTop="10dp"
-                       android:layout_marginBottom="40dp"
-                        android:layout_height="wrap_content">
                         <EditText
                             android:textColor="@color/black"
                             android:id="@+id/editTextiamLookingfor"
                             android:layout_width="match_parent"
                             android:padding="5dp"
                             android:gravity="bottom"
+                            android:inputType="textPersonName"
                             android:textColorHint="@color/black"
                             android:layout_height="wrap_content"
                             />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_marginTop="10dp"
+                       android:orientation="vertical"
+
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="20dp"
+                            android:layout_gravity="center_vertical"
+                            android:layout_height="50dp">
+                            <CheckBox
+                                android:layout_width="wrap_content"
+                                android:gravity="center_vertical"
+                                android:id="@+id/checkboxPrivacy"
+                                android:layout_height="match_parent" />
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_gravity="center"
+                                android:orientation="horizontal"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:textColor="@color/black"
+                                    android:text="I accept"
+                                    android:layout_height="wrap_content" />
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_marginLeft="5dp"
+
+                                    android:text="@string/privacypolicy"
+                                    android:id="@+id/textprivacypolicy"
+                                    android:textColor="@android:color/holo_blue_dark"
+                                    android:layout_height="wrap_content" />
+                            </LinearLayout>
+                        </LinearLayout>
+                        
 
                     </LinearLayout>
 
@@ -340,22 +542,22 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:gravity="center"
-        android:layout_height="90dp">
+        android:layout_height="100dp">
         <com.mindbees.stylerapp.UTILS.RoundedImageView
-            android:layout_width="90dp"
+            android:layout_width="100dp"
             app:corner_radius="150dp"
             android:id="@+id/user_profilepic"
             android:padding="3dip"
             android:scaleType="centerCrop"
             android:layout_centerHorizontal="true"
-            android:layout_height="90dp" />
+            android:layout_height="100dp" />
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <ImageView
                 android:id="@+id/imageEdit"
                 android:layout_gravity="center"
-                android:layout_marginLeft="42.5dp"
+                android:layout_marginLeft="48dp"
 
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
