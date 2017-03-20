@@ -9,6 +9,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +27,7 @@ import com.mindbees.stylerapp.UTILS.Util;
  */
 
 public class BaseActivity extends AppCompatActivity {
-
+    private String TAG_LOG = "STYLER";
     ProgressDialog pDialog;
 
 
@@ -119,7 +120,17 @@ public class BaseActivity extends AppCompatActivity {
     public void savePref(String key, Object value) {
         Util.getUtils().savePref(key, value);
     }
-
+    public void showLog(String msg, int color){
+        if (color == 0){
+            Log.v(TAG_LOG, msg);
+        }else if(color == 1){
+            Log.e(TAG_LOG, msg);
+        }else if(color == 2){
+            Log.i(TAG_LOG, msg);
+        }else if(color == 3){
+            Log.d(TAG_LOG, msg);
+        }
+    }
 
 
     @SuppressWarnings("unchecked")

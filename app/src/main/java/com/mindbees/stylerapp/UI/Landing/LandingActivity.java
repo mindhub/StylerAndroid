@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -55,7 +56,7 @@ import retrofit2.Response;
 
 public class LandingActivity extends BaseActivity {
     Bundle bundle;
-    ImageView Fbconnect;
+    RelativeLayout Fbconnect;
     LinearLayout Login,register;
     CallbackManager callbackManager;
     Bitmap mIcon1 = null;
@@ -103,7 +104,7 @@ public class LandingActivity extends BaseActivity {
                 showToast("Login success");
 
 //                tools.showLog(loginResult.getAccessToken() + "", 1);
-
+                showLog(loginResult.getAccessToken() + "", 1);
 //                isFbLogin = true;
                 fetchUserInfo();
 
@@ -111,7 +112,7 @@ public class LandingActivity extends BaseActivity {
 
             @Override
             public void onCancel() {
-//                tools.showToastMessage("Login cancel");
+
 
             }
 
@@ -148,12 +149,20 @@ public class LandingActivity extends BaseActivity {
         if (accessToken != null) {
             GraphRequest request = GraphRequest.newMeRequest(
                     accessToken, new GraphRequest.GraphJSONObjectCallback() {
+
                         @Override
-                        public void onCompleted(JSONObject me, GraphResponse response) {
+                        public void onCompleted(JSONObject object,
+                                                GraphResponse response) {
+                            // TODO Auto-generated method stub
+
+                            showLog(object+"", 2);
+                            showLog(response+"",3);
+
+                            parseUserInfo(object);
 
 
-                            parseUserInfo(me);
-
+//	                            user = me;
+//	                            updateUI();
 
                         }
                     });
@@ -165,7 +174,7 @@ public class LandingActivity extends BaseActivity {
 //            LoginManager.getInstance().logInWithPublishPermissions(this, Arrays.asList(PERMISSION));
         } else {
 
-//            showLog("facebook", "accessToken null");
+            showLog("access token is null", 2);
         }
     }
     private void parseUserInfo(JSONObject me) {
@@ -180,10 +189,6 @@ public class LandingActivity extends BaseActivity {
 
         try {
             id = me.getString("id");
-//            first_name=me.getString("first_name");
-//            last_name=me.getString("last_name");
-
-
 
             name = me.getString("name");
             email = me.getString("email");
@@ -198,13 +203,16 @@ public class LandingActivity extends BaseActivity {
 
             /*HashMap<String, String> params = new HashMap<>();
             params.put("user_email", email);
-            params.put("fb_id", id);
+            params.put("fb_id", fbid);
             params.put("full_name", name);
             params.put("user_age", );
             params.put("gender", gender);
             params.put("hw_id", "123");
             params.put("device_push_id", "2345");*/
-
+            showLog(id, 1);
+            showLog(name, 1);
+            showLog(email, 1);
+            showLog(imgUrl, 1);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -212,7 +220,7 @@ public class LandingActivity extends BaseActivity {
         bundle = new Bundle();
 
         if (id != null && !id.equalsIgnoreCase(""))
-            bundle.putString("id", id);
+            bundle.putString("fbid", id);
 
 
         if (name != null && !name.equalsIgnoreCase(""))
@@ -312,6 +320,13 @@ public class LandingActivity extends BaseActivity {
             p.show(mFragmentTransaction,"POPUP");
         }
         Login= (LinearLayout) findViewById(R.id.LoginButton);
+        Login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(LandingActivity.this,LoginActivity.class);
+                startActivity(intent);
+            }
+        });
         register= (LinearLayout) findViewById(R.id.RegisterButton);
         register.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -320,7 +335,7 @@ public class LandingActivity extends BaseActivity {
                 startActivity(i);
             }
         });
-        Fbconnect= (ImageView) findViewById(R.id.Fbconnect);
+        Fbconnect= (RelativeLayout) findViewById(R.id.Fbconnect);
         Fbconnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

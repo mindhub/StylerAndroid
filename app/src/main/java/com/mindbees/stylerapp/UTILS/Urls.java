@@ -13,4 +13,7 @@ public class Urls {
     public static final String TRIBES_URL="v1/getTribes";
     public static final String REGISTER_URL="v1/register";
     public static final String FB_SIGN_IN_URL="v1/facebooklogin";
+    public static final String FILE_UPLOAD="upload_photo.php";
+    public static final String UPDATE_PROFILE="v1/updateprofile";
+    public static final String LOGIN_URL="v1/login";
 }
