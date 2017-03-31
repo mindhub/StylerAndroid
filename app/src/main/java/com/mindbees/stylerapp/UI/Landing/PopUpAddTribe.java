@@ -30,6 +30,8 @@ public class PopUpAddTribe extends BaseActivity {
     EditText editTextTribe;
     ImageView closebutton;
     LinearLayout submit;
+    String name="";
+    int position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +39,21 @@ public class PopUpAddTribe extends BaseActivity {
         setContentView(R.layout.popup_add_tribe);
         initUI();
         SetUPUI();
+        try{
+            Bundle extras=getIntent().getExtras();
+            name=extras.getString("name");
+            position=extras.getInt("position");
+            if (!name.isEmpty())
+            {
+                heading.setText("EDIT");
+                editTextTribe.setText(name);
+            }
+
+
+        }catch (Exception e)
+        {
+
+        }
     }
 
     private void SetUPUI() {
@@ -51,12 +68,24 @@ public class PopUpAddTribe extends BaseActivity {
             public void onClick(View v) {
                if( check())
                {
-                   Intent returnIntent=new Intent();
-                   returnIntent.putExtra("TribeName",Tribename);
-                   returnIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                   setResult(Activity.RESULT_OK,returnIntent);
-                   finish();
-                   overridePendingTransition(0,0);
+                   if (name.isEmpty()) {
+                       Intent returnIntent = new Intent();
+                       returnIntent.putExtra("TribeName", Tribename);
+                       returnIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                       setResult(Activity.RESULT_OK, returnIntent);
+                       finish();
+                       overridePendingTransition(0, 0);
+                   }
+                   else {
+                       Intent returnIntent = new Intent();
+                       returnIntent.putExtra("TribeName", Tribename);
+                       returnIntent.putExtra("position",position);
+                       returnIntent.putExtra("edit",true);
+                       returnIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                       setResult(Activity.RESULT_OK, returnIntent);
+                       finish();
+                       overridePendingTransition(0, 0);
+                   }
                }
             }
         });
@@ -67,7 +96,8 @@ public class PopUpAddTribe extends BaseActivity {
         Tribename=editTextTribe.getText().toString().trim();
         if (Tribename.isEmpty())
         {
-            editTextTribe.setError("please Enter Tribe");
+//            editTextTribe.setError("please Enter Tribe");
+            showToast("Please enter tribe",false);
             return false;
         }
         else

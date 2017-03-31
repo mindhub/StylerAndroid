@@ -1,21 +1,28 @@
 package com.mindbees.stylerapp.UI.Landing;
 
-import android.app.ProgressDialog;
+import android.app.AlertDialog;
+import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.mindbees.stylerapp.R;
 import com.mindbees.stylerapp.UI.Base.BaseActivity;
+import com.mindbees.stylerapp.UI.HOME.HomeActivity;
 import com.mindbees.stylerapp.UI.Models.update_profile.ModelUpdateProfile;
 import com.mindbees.stylerapp.UTILS.Constants;
 import com.mindbees.stylerapp.UTILS.Retrofit.APIService;
 import com.mindbees.stylerapp.UTILS.Retrofit.ServiceGenerator;
 
 import java.util.HashMap;
+
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,6 +36,11 @@ import static com.mindbees.stylerapp.R.id.register_next;
 
 public class Registratiom_3_activity extends BaseActivity {
     String Sdesigners,StyleIcons,Snevergo;
+    private AlertDialog progressDialog;
+    MaterialDialog builder;
+    RelativeLayout errordesigner,errorstyleicons,errornevrgo;
+
+    TextView nevergo_ext;
     EditText editTextdesigners,editTextstyleIcons,editTextnevergo;
     TextView textViewdesigners,textViewstyleIcons,textViewnevergo;
     ImageView reg_next;
@@ -37,10 +49,39 @@ public class Registratiom_3_activity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.registration_3_layout);
         initUI();
-        setupui();
+        if (isNetworkAvailable())
+        {
+            setupui();
+        }
+        else {
+            showToast("Please check network connectivity",false);
+        }
+
+//        progressDialog = new SpotsDialog(this, R.style.Custom);
     }
 
     private void setupui() {
+        editTextdesigners.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                errordesigner.setVisibility(View.GONE);
+                return false;
+            }
+        });
+        editTextstyleIcons.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                errorstyleicons.setVisibility(View.GONE);
+                return false;
+            }
+        });
+        editTextnevergo.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                errornevrgo.setVisibility(View.GONE);
+                return false;
+            }
+        });
         reg_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,10 +100,19 @@ public class Registratiom_3_activity extends BaseActivity {
     }
 
     private void Submitslection() {
-        final ProgressDialog pd = new ProgressDialog(this);
-        pd.setMessage("Loading");
-        pd.setCancelable(false);
-        pd.show();
+//        final ProgressDialog pd = new ProgressDialog(this);
+//        pd.setMessage("Loading");
+//        pd.setCancelable(false);
+//        pd.show();
+        showProgress();
+
+//        builder= new MaterialDialog.Builder(this)
+//                .backgroundColor(Color.TRANSPARENT)
+//                .backgroundColorRes(R.color.thistle)
+//                .content(R.string.please_wait)
+//                .progress(true, 0)
+//                .show();
+//        progressDialog.show();
         HashMap<String, String> params = new HashMap<>();
         String userid=getPref(Constants.USER_ID);
         params.put("user_id", userid);
@@ -75,7 +125,9 @@ public class Registratiom_3_activity extends BaseActivity {
             @Override
             public void onResponse(Call<ModelUpdateProfile> call, Response<ModelUpdateProfile> response) {
                 if (response.isSuccessful())
-                {if (pd.isShowing()) { pd.dismiss(); }
+                {
+//                    builder.dismiss();
+                    hideProgress();
                     if (response.body()!=null&&response.body().getResult()!=null)
                     {
                         ModelUpdateProfile model=response.body();
@@ -83,11 +135,14 @@ public class Registratiom_3_activity extends BaseActivity {
                         if (value==1)
                         {
                             String msg=model.getResult().getMessage();
-                            showToast(msg);
+                            showToast("Registered successfully",true);
+                            Intent intent=new Intent(Registratiom_3_activity.this,HomeActivity.class);
+                            savePref(Constants.TAG_ISLOGGED_IN,true);
+                            startActivity(intent);
                         }
                         else {
                             String msg=model.getResult().getMessage();
-                            showToast(msg);
+                            showToast(msg,false);
                         }
 
                     }
@@ -96,7 +151,9 @@ public class Registratiom_3_activity extends BaseActivity {
 
             @Override
             public void onFailure(Call<ModelUpdateProfile> call, Throwable t) {
-                if (pd.isShowing()) { pd.dismiss(); }
+                hideProgress();
+
+//                builder.dismiss();
             }
         });
     }
@@ -105,7 +162,9 @@ public class Registratiom_3_activity extends BaseActivity {
         Snevergo=editTextnevergo.getText().toString().trim();
         if (Snevergo.isEmpty())
         {
-            editTextnevergo.setError("Plese enter your choice");
+//            editTextnevergo.setError("Plese enter your choice");
+//            showToast("Please enter your choice");
+            errornevrgo.setVisibility(View.VISIBLE);
             editTextnevergo.requestFocus();
             return false;
         }
@@ -115,11 +174,18 @@ public class Registratiom_3_activity extends BaseActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+
+    }
+
     private boolean checkstyleicons() {
         StyleIcons=editTextstyleIcons.getText().toString().trim();
         if (StyleIcons.isEmpty())
         {
-            editTextstyleIcons.setError("Please Enter your favourite Style icons");
+//            editTextstyleIcons.setError("Please enter your favourite style icons");
+//            showToast("Please enter your favorite style icons");
+            errorstyleicons.setVisibility(View.VISIBLE);
             editTextstyleIcons.requestFocus();
             return false;
         }
@@ -132,8 +198,10 @@ public class Registratiom_3_activity extends BaseActivity {
     private boolean checkdesigners() {
         Sdesigners=editTextdesigners.getText().toString().trim();
         if (Sdesigners.isEmpty())
-        {
-            editTextdesigners.setError("Please Enter your Favourite designers");
+      {
+//          showToast("Please enter your favorite designers");
+          errordesigner.setVisibility(View.VISIBLE);
+//            editTextdesigners.setError("Please enter your favourite designers");
             editTextdesigners.requestFocus();
             return false;
         }
@@ -150,6 +218,8 @@ public class Registratiom_3_activity extends BaseActivity {
         textViewdesigners= (TextView) findViewById(R.id.text_designerbrands);
         textViewstyleIcons= (TextView) findViewById(R.id.text_style_icons);
         textViewnevergo= (TextView) findViewById(R.id.text_never_go);
+        nevergo_ext= (TextView) findViewById(R.id.text_never_go_ext);
+        nevergo_ext.setText("(Don't be shy, we've all thought of this at least once!)");
         reg_next= (ImageView) findViewById(register_next);
         Typeface typeface=Typeface.createFromAsset(getAssets(),"fonts/brandon_grotesque_bold.ttf");
         Typeface typeface1=Typeface.createFromAsset(getAssets(),"fonts/BrandonGrotesque-Regular.ttf");
@@ -159,6 +229,9 @@ public class Registratiom_3_activity extends BaseActivity {
         textViewdesigners.setTypeface(typeface);
         textViewnevergo.setTypeface(typeface);
         textViewstyleIcons.setTypeface(typeface);
+        errordesigner= (RelativeLayout) findViewById(R.id.errordesigners);
+        errorstyleicons= (RelativeLayout) findViewById(R.id.errorstyleicons);
+        errornevrgo= (RelativeLayout) findViewById(R.id.errornevergo);
 
 
     }

@@ -23,4 +23,5 @@ public class Constants {
     public static final String KEY_FILTER = "key_filter";
     public static final String GENDER = "gender";
     public static final String FBREGISTRATION ="fbregistration" ;
+    public static final java.lang.String FBLOGIN = "FBLOGIN";
 }

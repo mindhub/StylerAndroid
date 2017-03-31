@@ -1,18 +1,31 @@
 package com.mindbees.stylerapp.UTILS;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
 import android.provider.SyncStateContract;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.mindbees.stylerapp.R;
 
 import java.io.File;
 
+import static com.mindbees.stylerapp.R.id.imageToast;
+
 public class Util {
+    ProgressDialog pDialog;
+
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
     Context context;
@@ -65,9 +78,64 @@ public class Util {
 
     public void showToastMessage(String paramString)
     {
-        Toast localToast = Toast.makeText(context, paramString, Toast.LENGTH_SHORT);
-        localToast.setGravity(16, 0, 0);
-        localToast.show();
+//        Toast localToast = Toast.makeText(context, paramString, Toast.LENGTH_SHORT);
+//
+//        ViewGroup view = (ViewGroup)localToast.getView();
+//        TextView messageTextView = (TextView) view.getChildAt(0);
+//        messageTextView.setTextSize(20);
+//        messageTextView.setTextColor(Color.WHITE);
+//        messageTextView.setShadowLayer(0,0,0,Color.TRANSPARENT);
+//        view.setPadding(30,30,30,30);
+//       view.setMinimumHeight(50);
+//        view.setMinimumWidth(200);
+
+//        view.setBackgroundColor(context.getResources().getColor(R.color.dark_slate_blue));
+
+//        view.setBackgroundResource(R.drawable.tags_rounded_corners);
+//        localToast.setGravity(16, 0, 0);
+//        localToast.show();
+    }
+    public void showToastMessage(String params,boolean error)
+    {
+        Toast toast=new Toast(context);
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setGravity(16,0,0);
+       View view= LayoutInflater.from(context).inflate(R.layout.customtoast,null);
+        TextView textView= (TextView) view.findViewById(R.id.toasttext);
+        ImageView imageView= (ImageView) view.findViewById(imageToast);
+        if (error) {
+            imageView.setImageResource(R.drawable.success);
+        }
+        else
+        {
+            imageView.setImageResource(R.drawable.error);
+        }
+        textView.setText(params);
+        toast.setView(view);
+        toast.show();
+
+
+    }
+    private ProgressDialog getProgressDialog() {
+        if (this.pDialog == null) {
+            this.pDialog = CustomProgressDialog.nowRunningDialog(context);
+        }
+        return this.pDialog;
+    }
+
+    public void showProgress() {
+        getProgressDialog();
+        if (this.pDialog != null) {
+            this.pDialog.show();
+        }
+
+    }
+
+    public void hideProgress() {
+        if (pDialog != null && this.pDialog.isShowing()) {
+            this.pDialog.dismiss();
+            pDialog = null;
+        }
     }
     public void savePref(String key, Object value) {
         delete(key);

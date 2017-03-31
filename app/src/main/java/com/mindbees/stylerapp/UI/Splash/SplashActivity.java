@@ -4,10 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 
 import com.mindbees.stylerapp.R;
 import com.mindbees.stylerapp.UI.Base.BaseActivity;
+import com.mindbees.stylerapp.UI.HOME.HomeActivity;
 import com.mindbees.stylerapp.UI.Landing.LandingActivity;
 import com.mindbees.stylerapp.UTILS.Constants;
 
@@ -36,8 +36,8 @@ public class SplashActivity extends BaseActivity {
 
                 if (getPref(Constants.TAG_ISLOGGED_IN, false)) {
 
-//                    Intent i = new Intent(Splash_Activity.this, Home.class);
-//                    startActivity(i);
+                    Intent i = new Intent(SplashActivity.this, HomeActivity.class);
+                 startActivity(i);
 //                    MainActivity.start(SplashActivity.this);
                 } else {
                    startActivity(new Intent(SplashActivity.this,LandingActivity.class));

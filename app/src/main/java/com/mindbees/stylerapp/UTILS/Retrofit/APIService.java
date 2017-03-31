@@ -7,6 +7,7 @@ package com.mindbees.stylerapp.UTILS.Retrofit;
 import com.mindbees.stylerapp.UI.Models.Ethnicity.ModelEthnicity;
 import com.mindbees.stylerapp.UI.Models.Fblogin.ModelFblogin;
 import com.mindbees.stylerapp.UI.Models.Login.ModelLogin;
+import com.mindbees.stylerapp.UI.Models.ModelForgotpassword.Modelforgot;
 import com.mindbees.stylerapp.UI.Models.Register.ModelRegister;
 import com.mindbees.stylerapp.UI.Models.Tribes.ModelTribes;
 import com.mindbees.stylerapp.UI.Models.update_profile.ModelUpdateProfile;
@@ -46,6 +47,10 @@ public interface APIService {
     @FormUrlEncoded
     @POST(Urls.REGISTER_URL)
     Call<ModelRegister>register(@FieldMap HashMap<String,String>params);
+    @Headers(("Oakey:stylapp@XYZ"))
+    @FormUrlEncoded
+    @POST(Urls.FBREGISTRATION)
+    Call<ModelRegister>fbregister(@FieldMap HashMap<String,String>params);
     @Headers("Oakey:stylapp@XYZ")
     @FormUrlEncoded
     @POST(Urls.FB_SIGN_IN_URL)
@@ -61,4 +66,8 @@ public interface APIService {
     @FormUrlEncoded
     @POST(Urls.LOGIN_URL)
     Call<ModelLogin>login(@FieldMap HashMap<String,String>params);
+    @Headers("Oakey:stylapp@XYZ")
+    @FormUrlEncoded
+    @POST(Urls.FORGOT_PASSWORD)
+    Call<Modelforgot>forgotpass(@FieldMap HashMap<String,String>params);
 }

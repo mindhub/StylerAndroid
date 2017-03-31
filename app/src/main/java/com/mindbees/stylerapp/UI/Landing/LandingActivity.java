@@ -16,7 +16,6 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -32,6 +31,7 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.mindbees.stylerapp.R;
 import com.mindbees.stylerapp.UI.Base.BaseActivity;
+import com.mindbees.stylerapp.UI.HOME.HomeActivity;
 import com.mindbees.stylerapp.UI.Models.Fblogin.ModelFblogin;
 import com.mindbees.stylerapp.UTILS.Constants;
 import com.mindbees.stylerapp.UTILS.Retrofit.APIService;
@@ -101,7 +101,7 @@ public class LandingActivity extends BaseActivity {
             @Override
             public void onSuccess(LoginResult loginResult) {
 
-                showToast("Login success");
+//              showToast(" face book Login success");
 
 //                tools.showLog(loginResult.getAccessToken() + "", 1);
                 showLog(loginResult.getAccessToken() + "", 1);
@@ -119,7 +119,7 @@ public class LandingActivity extends BaseActivity {
             @Override
             public void onError(FacebookException e) {
 
-                showToast("LOGIN ERROR");
+                showToast("LOGIN ERROR",false);
 
             }
         });
@@ -262,6 +262,11 @@ public class LandingActivity extends BaseActivity {
                             intent.putExtras(bundle);
                             startActivity(intent);
                         }
+                        else {
+                            Intent i = new Intent(LandingActivity.this, HomeActivity.class);
+                            savePref(Constants.TAG_ISLOGGED_IN,true);
+                            startActivity(i);
+                        }
                     }
                 }
             }
@@ -339,7 +344,9 @@ public class LandingActivity extends BaseActivity {
         Fbconnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LoginManager.getInstance().logInWithReadPermissions(LandingActivity.this, Arrays.asList("public_profile", "user_friends","email"));
+
+                    LoginManager.getInstance().logInWithReadPermissions(LandingActivity.this, Arrays.asList("public_profile", "user_friends", "email"));
+
             }
         });
 

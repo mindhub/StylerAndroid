@@ -1,8 +1,15 @@
 package com.mindbees.stylerapp.UI.Adapter;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +18,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.mindbees.stylerapp.R;
+import com.mindbees.stylerapp.UI.Base.BaseActivity;
 import com.mindbees.stylerapp.UI.Models.ImagegridModel;
+import com.mindbees.stylerapp.UTILS.CustomProgressDialog;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 
@@ -22,11 +32,20 @@ import java.util.ArrayList;
 
 public class GridRecycleAdapter extends RecyclerView.Adapter<GridRecycleAdapter.VIEWHOLDER> {
     private Context context;
+    int width,height;
+    ProgressDialog pDialog;
+
     public ArrayList<ImagegridModel>imagegridModels;
     public GridRecycleAdapter(Context context,ArrayList<ImagegridModel>imagegridModels)
     {
         this.context=context;
         this.imagegridModels=imagegridModels;
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        ((Activity) context).getWindowManager()
+                .getDefaultDisplay()
+                .getMetrics(displayMetrics);
+         height = displayMetrics.heightPixels;
+         width = displayMetrics.widthPixels;
     }
     public ImagegridModel getObject(int position)
     {
@@ -40,16 +59,58 @@ public class GridRecycleAdapter extends RecyclerView.Adapter<GridRecycleAdapter.
     }
 
     @Override
-    public void onBindViewHolder(GridRecycleAdapter.VIEWHOLDER holder, int position) {
-        Picasso.with(context).load(imagegridModels.get(position).getTribeImage()).into(holder.tribe_image);
-        holder.tribe_name.setText(imagegridModels.get(position).getTribeName());
-        if (imagegridModels.get(position).isSelected())
+    public void onBindViewHolder(final GridRecycleAdapter.VIEWHOLDER holder, int position) {
+
+        if (imagegridModels.get(position).getTribeImage().isEmpty())
         {
+            Picasso.with(context).load(R.drawable.logo).placeholder(R.drawable.logo).into(holder.tribe_image);
+            holder.otherlayout.setBackground(context.getResources().getDrawable(R.drawable.rectangle_3));
             holder.tribe_selected.setVisibility(View.VISIBLE);
+            holder.tribe_selected.setBackgroundColor(Color.TRANSPARENT);
+
         }
         else {
-            holder.tribe_selected.setVisibility(View.GONE);
+
+            Picasso.with(context).load(imagegridModels.get(position).getTribeImage()).placeholder(R.drawable.logo).into(holder.tribe_image);
+//            Picasso.with(context).load(imagegridModels.get(position).getTribeImage()).into(new Target() {
+//                @Override
+//                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+//                   hideProgress();
+//                }
+//
+//                @Override
+//                public void onBitmapFailed(Drawable errorDrawable) {
+//                    hideProgress();
+//
+//                }
+//
+//                @Override
+//                public void onPrepareLoad(Drawable placeHolderDrawable) {
+//                    showProgress();
+//
+//                }
+//            });
+            holder.otherlayout.setBackground(context.getResources().getDrawable(R.drawable.rectangle_2));
+            if (imagegridModels.get(position).isSelected())
+            {
+                holder.tribe_selected.setVisibility(View.VISIBLE);
+                holder.tribe_selected.setBackgroundColor(context.getResources().getColor(R.color.grey_white));
+            }
+            else {
+                holder.tribe_selected.setVisibility(View.GONE);
+            }
+
         }
+
+        holder.tribe_name.setText(imagegridModels.get(position).getTribeName());
+        int h=height/6;
+        ViewGroup.LayoutParams params = holder.imagelayout.getLayoutParams();
+        params.height=h;
+        holder.imagelayout.setLayoutParams(params);
+
+        Typeface typeface=Typeface.createFromAsset(context.getAssets(),"fonts/brandon_grotesque_bold.ttf");
+        Typeface typeface1=Typeface.createFromAsset(context.getAssets(),"fonts/BrandonGrotesque-Regular.ttf");
+        holder.tribe_name.setTypeface(typeface1);
 
 
     }
@@ -62,7 +123,9 @@ public class GridRecycleAdapter extends RecyclerView.Adapter<GridRecycleAdapter.
     public class VIEWHOLDER extends RecyclerView.ViewHolder {
         TextView tribe_name;
         ImageView tribe_image;
+        RelativeLayout imagelayout;
         RelativeLayout tribe_selected;
+        RelativeLayout otherlayout;
 
 
         public VIEWHOLDER(View itemView) {
@@ -70,7 +133,30 @@ public class GridRecycleAdapter extends RecyclerView.Adapter<GridRecycleAdapter.
             tribe_image= (ImageView) itemView.findViewById(R.id.imageTribe);
             tribe_name= (TextView) itemView.findViewById(R.id.imageTribeName);
             tribe_selected= (RelativeLayout) itemView.findViewById(R.id.image_select);
+            imagelayout= (RelativeLayout) itemView.findViewById(R.id.imagelayout);
+            otherlayout= (RelativeLayout) itemView.findViewById(R.id.other_image_layout);
 
+        }
+    }
+    private ProgressDialog getProgressDialog() {
+        if (this.pDialog == null) {
+            this.pDialog = CustomProgressDialog.nowRunningDialog(context);
+        }
+        return this.pDialog;
+    }
+
+    public void showProgress() {
+        getProgressDialog();
+        if (this.pDialog != null) {
+            this.pDialog.show();
+        }
+
+    }
+
+    public void hideProgress() {
+        if (pDialog != null && this.pDialog.isShowing()) {
+            this.pDialog.dismiss();
+            pDialog = null;
         }
     }
 }

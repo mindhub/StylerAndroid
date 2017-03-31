@@ -7,15 +7,26 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment ;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.mindbees.stylerapp.R;
+import com.mindbees.stylerapp.UI.Models.ModelForgotpassword.Modelforgot;
+import com.mindbees.stylerapp.UTILS.Retrofit.APIService;
+import com.mindbees.stylerapp.UTILS.Retrofit.ServiceGenerator;
 import com.mindbees.stylerapp.UTILS.Util;
+
+import java.util.HashMap;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by User on 20-03-2017.
@@ -27,6 +38,7 @@ public class PopUpForgotPassword extends DialogFragment {
     ImageView closebutton;
     LinearLayout submit;
     String Email;
+    RelativeLayout forgotemail;
 
     public static PopUpForgotPassword newInstance()
     {
@@ -48,13 +60,25 @@ public class PopUpForgotPassword extends DialogFragment {
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         getDialog().getWindow().requestFeature(1);
         initUi(view);
+        setUpui();
         return view;
+    }
+
+    private void setUpui() {
+        editTextForgot.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                forgotemail.setVisibility(View.GONE);
+                return false;
+            }
+        });
     }
 
     private void initUi(View view) {
         closebutton= (ImageView) view.findViewById(R.id.close_button);
         editTextForgot= (EditText) view.findViewById(R.id.editTextForgot);
         heading= (TextView) view.findViewById(R.id.textViewForgotHeading);
+        forgotemail= (RelativeLayout) view.findViewById(R.id.errorforgotemail);
         sub= (TextView) view.findViewById(R.id.textViewForgot);
         submit= (LinearLayout) view.findViewById(R.id.layout_submit_Forgot);
         Typeface typeface=Typeface.createFromAsset(getContext().getAssets(),"fonts/brandon_grotesque_bold.ttf");
@@ -73,6 +97,7 @@ public class PopUpForgotPassword extends DialogFragment {
             public void onClick(View v) {
                 if (checkEmail())
                 {
+                    getwebservice();
 
                 }
             }
@@ -85,7 +110,8 @@ public class PopUpForgotPassword extends DialogFragment {
         Email=editTextForgot.getText().toString().trim();
         if (Email.isEmpty())
         {
-            editTextForgot.setError("Please Enter a valid email Address");
+//            editTextForgot.setError("Please Enter a valid email Address");
+            forgotemail.setVisibility(View.VISIBLE);
             editTextForgot.requestFocus();
             return false;
         }
@@ -96,10 +122,54 @@ public class PopUpForgotPassword extends DialogFragment {
                 return true;
             }
             else {
-                editTextForgot.setError("Please Enter a valid email Address");
+//                editTextForgot.setError("Please Enter a valid email Address");
+                forgotemail.setVisibility(View.VISIBLE);
                 editTextForgot.requestFocus();
                 return false;
             }
         }
+    }
+
+    public void getwebservice() {
+        final Util util=new Util(getContext());
+        util.showProgress();
+
+        HashMap<String, String> params = new HashMap<>();
+        params.put("user_email",Email);
+        final APIService service = ServiceGenerator.createService(APIService.class, getContext());
+        Call<Modelforgot>call=service.forgotpass(params);
+        call.enqueue(new Callback<Modelforgot>() {
+            @Override
+            public void onResponse(Call<Modelforgot> call, Response<Modelforgot> response) {
+                if (response.isSuccessful())
+                {
+                 util.hideProgress();
+                    if (response.body()!=null&&response.body().getResult()!=null)
+                    {
+                        Modelforgot modelforgot=response.body();
+                        int status=modelforgot.getResult().get(0).getUserStatus();
+                        if (status==0)
+                        {
+                            String message=modelforgot.getResult().get(0).getMessage();
+                            Util.getUtils().showToastMessage(message,false);
+
+                        }
+                        else {
+                            String message=modelforgot.getResult().get(0).getMessage();
+                            Util.getUtils().showToastMessage(message,true);
+                            dismiss();
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Modelforgot> call, Throwable t) {
+              util.hideProgress();
+            }
+        });
+
+
+
     }
 }

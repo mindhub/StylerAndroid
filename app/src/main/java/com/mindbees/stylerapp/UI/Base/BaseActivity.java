@@ -10,15 +10,18 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mindbees.stylerapp.R;
+import com.mindbees.stylerapp.UTILS.CustomProgressDialog;
 import com.mindbees.stylerapp.UTILS.Util;
 
 
@@ -38,7 +41,7 @@ public class BaseActivity extends AppCompatActivity {
     }
     private ProgressDialog getProgressDialog() {
         if (this.pDialog == null) {
-//            this.pDialog = CustomProgressDialog.nowRunningDialog(this);
+            this.pDialog = CustomProgressDialog.nowRunningDialog(this);
         }
         return this.pDialog;
     }
@@ -89,12 +92,15 @@ public class BaseActivity extends AppCompatActivity {
 
         Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_SHORT);
         View view  = snackbar.getView();
+//        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)view.getLayoutParams();
+//        params.gravity = Gravity.CENTER;
+//        view.setLayoutParams(params);
         TextView textView = (TextView) view.findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(Color.WHITE);
         if (isSuccess){
             view.setBackgroundColor(getResources().getColor(R.color.green_button));
         }else {
-            view.setBackgroundColor(getResources().getColor(R.color.red_orange));
+            view.setBackgroundColor(getResources().getColor(R.color.dark_slate_blue));
         }
 
         snackbar.show();
@@ -110,8 +116,8 @@ public class BaseActivity extends AppCompatActivity {
     public void delete(String key) {
         Util.getUtils().delete(key);
     }
-    public void showToast(String Toast){
-        Util.getUtils().showToastMessage(Toast);
+    public void showToast(String Toast,boolean error){
+        Util.getUtils().showToastMessage(Toast,error);
     }
     public  boolean isValidEmail(CharSequence target) {
         return Util.getUtils().isValidEmail(target);

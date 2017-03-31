@@ -16,4 +16,6 @@ public class Urls {
     public static final String FILE_UPLOAD="upload_photo.php";
     public static final String UPDATE_PROFILE="v1/updateprofile";
     public static final String LOGIN_URL="v1/login";
+    public static final String FBREGISTRATION="v1/fbregister";
+    public static final String FORGOT_PASSWORD="v1/forgotPassword";
 }

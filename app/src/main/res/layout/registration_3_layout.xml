@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:background="@drawable/bg_splash"
+
     android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:background="@drawable/bg_splash"
+        android:alpha=".3"
+        android:layout_height="match_parent">
+
+    </RelativeLayout>
     <RelativeLayout
         android:layout_width="match_parent"
         android:id="@+id/logolayout"
@@ -17,13 +24,28 @@
 
 
     </RelativeLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:isScrollContainer="false"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/logolayout"
+        android:layout_alignParentStart="true">
+
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_below="@id/logolayout"
+
+        android:layout_height="wrap_content">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+
         android:layout_marginRight="20dp"
         android:layout_marginLeft="20dp"
         android:background="@color/whitesmoke"
         android:layout_marginTop="20dp"
+
         android:layout_height="wrap_content">
         <RelativeLayout
             android:layout_width="match_parent"
@@ -42,19 +64,49 @@
                     android:layout_width="match_parent"
                     android:text="@string/desigener_brands"
                     android:id="@+id/text_designerbrands"
+                    android:textSize="16dp"
                     android:textColor="@color/black"
                     android:layout_height="wrap_content" />
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/view_rectangle_border"
                     android:layout_height="wrap_content">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_margin="1dp"
+                        android:id="@+id/errordesigners"
+                        android:visibility="gone"
+
+
+
+                        android:background="@color/thistle"
+                        android:layout_height="50dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:paddingLeft="5dp"
+                            android:textSize="11dp"
+                            android:text="Please enter your favorite designers/brands"
+                            android:textColor="@color/white"
+                            android:layout_height="wrap_content" />
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:paddingRight="10dp"
+                            android:src="@drawable/alert"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:layout_height="30dp" />
+
+                    </RelativeLayout>
                     <EditText
                         android:layout_width="match_parent"
                         android:id="@+id/editfavourite_Designer"
                         android:background="@android:color/transparent"
-                        android:inputType="textPersonName"
+                        android:inputType="textPersonName|textCapSentences"
                         android:textColor="@color/black"
+                        android:paddingLeft="10dp"
+                        android:hint="@string/brandhint"
+
 
                         android:minHeight="50dp"
                         android:layout_height="wrap_content" />
@@ -66,34 +118,63 @@
 
                     <!--</com.mindbees.stylerapp.UTILS.MultiSpinner>-->
 
-                </LinearLayout>
+                </RelativeLayout>
             </LinearLayout>
 
             
             <LinearLayout
                 android:layout_width="match_parent"
                 android:id="@+id/layout2"
-                android:layout_marginTop="10dp"
-                android:layout_below="@+id/layout1"
+                android:layout_marginTop="7dp"
                 android:orientation="vertical"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/layout1"
+                android:layout_alignParentStart="true">
                 <TextView
                     android:layout_width="match_parent"
                     android:text="@string/style_icons"
                     android:id="@+id/text_style_icons"
+                    android:textSize="16dp"
                     android:textColor="@color/black"
                     android:layout_height="wrap_content" />
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/view_rectangle_border"
                     android:layout_height="wrap_content">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_margin="1dp"
+                        android:id="@+id/errorstyleicons"
+                        android:visibility="gone"
+
+
+                        android:background="@color/thistle"
+                        android:layout_height="50dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:paddingLeft="5dp"
+                            android:textSize="11dp"
+                            android:text="Please enter your favorite style icons"
+                            android:textColor="@color/white"
+                            android:layout_height="wrap_content" />
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:paddingRight="10dp"
+                            android:src="@drawable/alert"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:layout_height="30dp" />
+
+                    </RelativeLayout>
                     <EditText
                         android:layout_width="match_parent"
                         android:id="@+id/editstyle_icons"
                         android:background="@android:color/transparent"
-                        android:inputType="textPersonName"
+                        android:inputType="textPersonName|textCapSentences"
                         android:textColor="@color/black"
+                        android:paddingLeft="10dp"
+                        android:hint="@string/style_hint"
 
                         android:minHeight="50dp"
                         android:layout_height="wrap_content" />
@@ -105,7 +186,7 @@
 
                     <!--</com.mindbees.stylerapp.UTILS.MultiSpinner>-->
 
-                </LinearLayout>
+                </RelativeLayout>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -118,20 +199,53 @@
                     android:layout_width="match_parent"
                     android:text="@string/never_go"
                     android:id="@+id/text_never_go"
+                    android:textSize="16dp"
                     android:textColor="@color/black"
                     android:layout_height="wrap_content" />
-                <LinearLayout
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="3dp"
+                    android:id="@+id/text_never_go_ext"
+                    android:textStyle="italic"
+                    android:layout_height="wrap_content" />
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/view_rectangle_border"
                     android:layout_height="wrap_content">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_margin="1dp"
+                        android:id="@+id/errornevergo"
+                        android:visibility="gone"
+
+
+                        android:background="@color/thistle"
+                        android:layout_height="50dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:paddingLeft="5dp"
+                            android:textSize="11dp"
+                            android:text="Please enter your choice"
+                            android:textColor="@color/white"
+                            android:layout_height="wrap_content" />
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:paddingRight="10dp"
+                            android:src="@drawable/alert"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:layout_height="30dp" />
+                    </RelativeLayout>
                     <EditText
                         android:layout_width="match_parent"
                         android:id="@+id/editnever_go"
                         android:background="@android:color/transparent"
-                        android:inputType="textPersonName"
+                        android:inputType="textPersonName|textCapSentences"
                         android:textColor="@color/black"
                         android:minHeight="50dp"
+                        android:paddingLeft="10dp"
+                        android:hint="@string/nevergo_hint"
                         android:layout_height="wrap_content" />
                     <!--<com.mindbees.stylerapp.UTILS.MultiSpinner-->
                         <!--android:layout_width="match_parent"-->
@@ -141,7 +255,7 @@
 
                     <!--</com.mindbees.stylerapp.UTILS.MultiSpinner>-->
 
-                </LinearLayout>
+                </RelativeLayout>
             </LinearLayout>
 
             <!--<LinearLayout-->
@@ -174,11 +288,13 @@
 
             <!--</LinearLayout>-->
         </RelativeLayout>
-
     </RelativeLayout>
+    </RelativeLayout>
+    </ScrollView>
     <RelativeLayout
         android:layout_width="match_parent"
         android:id="@+id/nextButton"
+
         android:layout_alignParentBottom="true"
         android:layout_height="80dp">
         <ImageView

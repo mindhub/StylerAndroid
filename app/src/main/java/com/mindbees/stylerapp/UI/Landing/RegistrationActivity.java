@@ -12,7 +12,9 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -23,11 +25,17 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ScrollingView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatSpinner;
+import android.text.Html;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -39,8 +47,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.bruce.pickerview.popwindow.DatePickerPopWin;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
@@ -61,7 +75,9 @@ import com.mindbees.stylerapp.UTILS.Retrofit.APIService;
 import com.mindbees.stylerapp.UTILS.Retrofit.ServiceGenerator;
 import com.mindbees.stylerapp.UTILS.RoundedImageView;
 import com.mindbees.stylerapp.UTILS.Util;
+;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -69,12 +85,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.concurrent.Exchanger;
+
 
 import eu.janmuller.android.simplecropimage.CropImage;
 import okhttp3.MediaType;
@@ -88,7 +109,11 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
+import static com.mindbees.stylerapp.R.id.editTextconfirmpass;
+import static com.mindbees.stylerapp.R.id.editextfirstName;
+import static com.mindbees.stylerapp.R.id.errorfirstname;
 import static com.mindbees.stylerapp.R.id.radio;
+import static java.lang.Math.floor;
 
 
 /**
@@ -96,20 +121,23 @@ import static com.mindbees.stylerapp.R.id.radio;
  */
 
 public class RegistrationActivity extends BaseActivity implements LocationListener{
-    String Fname,Lname,Semail,Spassword,Sdob,Sloc,Slike,Sweight,Sheight,Sethnicity,Slookingfor,SuserName;
-    String gender="f";
+    String Fname,Lname,Semail,Spassword,Sdob,Sloc,Slike,Sweight,Sheight,Sethnicity="",Slookingfor,SuserName;
+    String gender="";
     TextView iam;
     String EthnicityTitle="";
     String EthnicityId="";
     File f;
-    String iLike="mf";
+    String iLike="";
     int pos;
+    MaterialDialog builder;
     String userID;
-
+    private android.app.AlertDialog progressDialog;
     String fbid="",fbname="",email,genderfb,first_name,last_name;
     LinearLayout likemale,likefemale,likeboth;
     TextView textlikemale,textlikefemale,textlikeboth,textheadlike;
+    SpinnerAdapter adapter;
 
+    RelativeLayout errorFirstname,errorlastname,errorusername,erroremail,errorpassword,errorconfirmpassword,errordob,errorlocation;
 
 
     FragmentManager mFragmentManager;
@@ -122,23 +150,30 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
     String cityname;
     String Lat;
     String LONG;
+    boolean imagedata=false;
     ImageView imageViewSpinner;
     boolean others=false;
     LatLng temp;
     LatLngBounds BOUNDS_MOUNTAIN_VIEW;
     public static final int PLACE_PICKER_REQUEST = 00;
+    public static final int IMAGE_EDIT=0x4;
     ImageView picedit,reg_next;
     private File mFileTemp;
     LinearLayout Linearmale,Linearfemale;
     TextView textmale,textfemale,textilike,textloooking;
     EditText editemail,editpass,editdob,editloc,editheight,editweight,editethnicity,editlookingfor,editTextfirstname,editTextlastname,editTextUsername;
     AppCompatSpinner spinethnic;
+    EditText Confirmpass;
     CheckBox checkBoxprivacy;
     TextView textViewPrivacy;
     RadioGroup rg;
+    ScrollView scrollingView;
+    AppCompatSpinner spinweight,spinheight;
     double lat,lng;
     boolean selected=false;
     public List<SpinnerModel> listitems;
+    public List<SpinnerModel>listweight;
+    public List<SpinnerModel>listHeight;
     List<Result>list;
     ArrayList<String>listelements;
     public static final int REQUEST_CODE_GALLERY      = 0x1;
@@ -149,10 +184,17 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.registration_layout);
+//        progressDialog = new SpotsDialog(this, R.style.Custom);
+//        setupUI(findViewById(R.id.registrationlayout));
+
+
 
         listitems=new ArrayList<SpinnerModel>();
+        listHeight=new ArrayList<SpinnerModel>();
+        listweight=new ArrayList<SpinnerModel>();
 
         initui();
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         Initializepicker();
         if (isNetworkAvailable())
         {
@@ -160,9 +202,10 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
 
         }
         else {
-            showToast("NETWORK NOT AVAILABLE");
+            showToast("Please check network connectivity",false);
         }
         setupUi();
+        setSpinnner();
         try{
             Bundle i=getIntent().getExtras();
             fbid =i.getString("fbid");
@@ -176,7 +219,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         }catch (Exception e){}
       try
       {
-          Getlocation();
+//          Getlocation();
       }
       catch (Exception e)
       {
@@ -193,12 +236,48 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
 
     }
 
+    private void setSpinnner() {
+        SpinnerModel model2=new SpinnerModel();
+        model2.setName("SELECT HEIGHT");
+        listHeight.add(model2);
+       for(int i=120;i<241;i++)
+
+       {
+           double d=i*.01;
+           DecimalFormat numberFormat = new DecimalFormat("#.00");
+           String s=String.valueOf(numberFormat.format(d))+" m";
+           SpinnerModel model=new SpinnerModel();
+           model.setName(s);
+           listHeight.add(model);
+
+
+       }
+       SpinnerAdapter adapter=new SpinnerAdapter(RegistrationActivity.this,listHeight);
+        spinheight.setAdapter(adapter);
+        SpinnerModel model3=new SpinnerModel();
+        model3.setName("SELECT WEIGHT");
+        listweight.add(model3);
+        for (int i=40;i<141;i++)
+        {
+            String s=String.valueOf(i)+" kg";
+            SpinnerModel model4=new SpinnerModel();
+            model4.setName(s);
+            listweight.add(model4);
+        }
+        SpinnerAdapter adapter1=new SpinnerAdapter(RegistrationActivity.this,listweight);
+        spinweight.setAdapter(adapter1);
+
+    }
+
+
+
     private void SetFb() {
         if(!fbname.isEmpty()) {
 //            editTextfirstname.setText(fbname);
             String[]Splitted=fbname.split("\\s");
             editTextfirstname.setText(Splitted[0]);
             editTextlastname.setText(Splitted[1]);
+
         }
 //        if(!last_name.isEmpty()) {
 //            editTextlastname.setText(fbname);
@@ -209,6 +288,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
       }
 
        editpass.setVisibility(View.GONE);
+        Confirmpass.setVisibility(View.GONE);
         if (!gender.isEmpty())
         {
             if (gender.equals("f"))
@@ -218,6 +298,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                 Linearmale.setBackgroundColor(getResources().getColor(R.color.white));
                 textmale.setTextColor(getResources().getColor(R.color.black));
                 gender="f";
+
             }
             else {
                 Linearmale.setBackgroundColor(getResources().getColor(R.color.black));
@@ -225,19 +306,71 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                 Linearfemale.setBackgroundColor(getResources().getColor(R.color.white));
                 textfemale.setTextColor(getResources().getColor(R.color.black));
                 gender="m";
+
             }
 
         }
        String user_photo="https://graph.facebook.com/" + fbid + "/picture?type=large";
-        Picasso.with(this).load(user_photo).into(userpic);
-        try {
-            setImageBitmap(user_photo);
-        }catch (Exception e)
-        {
 
+        Picasso.with(this).load(user_photo).into(userpic);
+        Picasso.with(this).load(user_photo).into(new Target() {
+            @Override
+            public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
+                new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        Bitmap bm=bitmap;
+                        imagedata=true;
+
+                        f =new  File(Environment.getExternalStorageDirectory()
+                                + File.separator + Constants.TEMP_PHOTO_FILE);
+                        try {
+                            f.createNewFile();
+                            FileOutputStream ostream = new FileOutputStream(f);
+                            bm.compress(Bitmap.CompressFormat.JPEG, 80, ostream);
+                            ostream.flush();
+                            ostream.close();
+                        } catch (IOException e) {
+                            Log.e("IOException", e.getLocalizedMessage());
+                        }
+                    }
+                }).start();
+
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+            }
+        });
+//        try {
+//            Bitmap m=getBitmapFromURL(user_photo);
+//            bimapTofile(m);
+//        }catch (Exception e)
+//        {
+//
+//        }
+    }
+    public static Bitmap getBitmapFromURL(String src) {
+        try {
+            URL url = new URL(src);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            return myBitmap;
+        } catch (IOException e) {
+            // Log exception
+            return null;
         }
     }
-
     private void setImageBitmap(String imageurl) throws IOException{
         URL url = new URL(imageurl);
         Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
@@ -260,7 +393,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                         list=model.getResult();
                         final String[]items=new String[list.size()];
                         SpinnerModel model2=new SpinnerModel();
-                        model2.setName("ETHNICITY");
+                       model2.setName(" SELECT  ETHNICITY");
                         listitems.add(model2);
 
 
@@ -276,9 +409,9 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
 //                        adapter.setDropDownViewResource(R.layout.spinner_item);
 //                        spinethnic.setAdapter(adapter);
                         SpinnerModel model3=new SpinnerModel();
-                        model3.setName("OTHERS");
+                        model3.setName("Other");
                         listitems.add(model3);
-                        SpinnerAdapter adapter=new SpinnerAdapter(RegistrationActivity.this,listitems);
+                        adapter=new SpinnerAdapter(RegistrationActivity.this,listitems);
                         spinethnic.setAdapter(adapter);
                     }
                 }
@@ -292,43 +425,57 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         });
 
     }
-
+    public void hideSoftKeyboard() {
+        if(getCurrentFocus()!=null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
+    }
     private void setupUi() {
-        editlookingfor.setFocusable(false);
-        editTextfirstname.setFocusable(false);
-        editTextlastname.setFocusable(false);
+        View view = getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+//        editTextUsername.setFocusable(false);
+//        editlookingfor.setFocusable(false);
+//
+//        editTextfirstname.requestFocus();
+//        editTextlastname.setFocusable(false);
         editethnicity.setFocusable(false);
-        editemail.setFocusable(false);
-        editpass.setFocusable(false);
-        editloc.setFocusable(false);
-        editheight.setFocusable(false);
-        editweight.setFocusable(false);
-        editTextUsername.setFocusable(false);
-        editTextUsername.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                editTextUsername.setFocusableInTouchMode(true);
-                return false;
-            }
-        });
+        editdob.setFocusable(false);
+//        editemail.setFocusable(false);
+//        editpass.setFocusable(false);
+//        editloc.setFocusable(false);
+       editheight.setFocusable(false);
+       editweight.setFocusable(false);
+//        editTextfirstname.setFocusable(false);
+
         editTextfirstname.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                editTextfirstname.setFocusableInTouchMode(true);
+               errorFirstname.setVisibility(View.GONE);
                 return false;
             }
         });
         editTextlastname.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                editTextlastname.setFocusableInTouchMode(true);
+               errorlastname.setVisibility(View.GONE);
+                return false;
+            }
+        });
+        editTextUsername.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+               errorusername.setVisibility(View.GONE);
                 return false;
             }
         });
         editemail.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                editemail.setFocusableInTouchMode(true);
+               erroremail.setVisibility(View.GONE);
                 return false;
             }
         });
@@ -336,38 +483,144 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
-                editloc.setFocusableInTouchMode(true);
+                errorlocation.setVisibility(View.GONE);
                 return false;
             }
         });
         editpass.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                editpass.setFocusableInTouchMode(true);
+              errorpassword.setVisibility(View.GONE);
                 return false;
             }
         });
-        editweight.setOnTouchListener(new View.OnTouchListener() {
+        Confirmpass.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                editweight.setFocusableInTouchMode(true);
+                errorconfirmpassword.setVisibility(View.GONE);
                 return false;
             }
         });
-        editheight.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                editheight.setFocusableInTouchMode(true);
-                return false;
-            }
-        });
-        editlookingfor.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                editlookingfor.setFocusableInTouchMode(true);
-                return false;
-            }
-        });
+//        editTextfirstname.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)||(actionId==EditorInfo.IME_ACTION_NEXT)) {
+//                    View view = getCurrentFocus();
+//                    if (view != null) {
+//                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+//                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+//                    }
+//
+//                }
+//                return false;
+//
+//            }
+//        });
+//        editTextlastname.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)||(actionId==EditorInfo.IME_ACTION_NEXT)) {
+//                    View view = getCurrentFocus();
+//                    if (view != null) {
+//                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+//                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+//                    }
+//
+//                }
+//                return false;
+//            }
+//        });
+//        editTextUsername.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)||(actionId==EditorInfo.IME_ACTION_NEXT)) {
+//                    View view = getCurrentFocus();
+//                    if (view != null) {
+//                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+//                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+//                    }
+//
+//                }
+//                return false;
+//            }
+//        });
+//        editemail.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)||(actionId==EditorInfo.IME_ACTION_NEXT)) {
+//                    View view = getCurrentFocus();
+//                    if (view != null) {
+//                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+//                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+//                    }
+//
+//                }
+//                return false;
+//            }
+//        });
+//        editpass.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)||(actionId==EditorInfo.IME_ACTION_NEXT)) {
+//                    View view = getCurrentFocus();
+//                    if (view != null) {
+//                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+//                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+//                    }
+//
+//                }
+//                return false;
+//            }
+//        });
+//        Confirmpass.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)||(actionId==EditorInfo.IME_ACTION_NEXT)) {
+//                    View view = getCurrentFocus();
+//                    if (view != null) {
+//                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+//                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+//                    }
+//
+//                }
+//                return false;
+//            }
+//        });
+//        editloc.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)||(actionId==EditorInfo.IME_ACTION_NEXT)) {
+//                    View view = getCurrentFocus();
+//                    if (view != null) {
+//                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+//                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+//                    }
+//
+//                }
+//                return false;
+//            }
+//        });
+//        editweight.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//
+//                return false;
+//            }
+//        });
+//        editheight.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                editheight.setFocusableInTouchMode(true);
+//                return false;
+//            }
+//        });
+//        editlookingfor.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                editlookingfor.setFocusableInTouchMode(true);
+//                return false;
+//            }
+//        });
         Linearmale.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -376,6 +629,14 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                 Linearfemale.setBackgroundColor(getResources().getColor(R.color.white));
                 textfemale.setTextColor(getResources().getColor(R.color.black));
                 gender="m";
+                if (!imagedata){
+                    if (fbid.isEmpty()) {
+                        userpic.setImageDrawable(getResources().getDrawable(R.drawable.user_default));
+                    }
+                }
+
+
+
 
             }
         });
@@ -387,6 +648,13 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                 Linearmale.setBackgroundColor(getResources().getColor(R.color.white));
                 textmale.setTextColor(getResources().getColor(R.color.black));
                 gender="f";
+                if (!imagedata){
+                    if (fbid.isEmpty()) {
+                        userpic.setImageDrawable(getResources().getDrawable(R.drawable.user_f));
+                    }
+
+                }
+
             }
         });
         likemale.setOnClickListener(new View.OnClickListener() {
@@ -426,7 +694,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                 iLike="mf";
             }
         });
-        picedit.setOnClickListener(new View.OnClickListener() {
+        userpic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mFileTemp= Util.createFile(RegistrationActivity.this);
@@ -438,22 +706,65 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         editdob.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Calendar calender=Calendar.getInstance(TimeZone.getDefault());
-                int Year=calender.get(Calendar.YEAR);
+                View view = getCurrentFocus();
+                if (view != null) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
+                errordob.setVisibility(View.GONE);
+               final Calendar calender=Calendar.getInstance(TimeZone.getDefault());
+                final int Year=calender.get(Calendar.YEAR);
+                int yeartemp=Year-18;
                 final int Month=calender.get(Calendar.MONTH);
                 int Date=calender.get(Calendar.DAY_OF_MONTH);
-                DatePickerDialog datepicker=new DatePickerDialog(RegistrationActivity.this, new DatePickerDialog.OnDateSetListener() {
+                String datechoose=yeartemp+"-"+(Month+1)+"-"+Date;
+//                DatePickerDialog datepicker=new DatePickerDialog(RegistrationActivity.this, new DatePickerDialog.OnDateSetListener() {
+//                    @Override
+//                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+//                        if (Year-year<18)
+//                        {
+////                            showSnackBar("You should be above 18 years",false);
+//                            showToast("You must be atleast 18 years old !");
+//                        }
+//                        else {
+//                            editdob.setText(year + "-" + (month + 1) + "-" + dayOfMonth);
+//                        }
+//
+//
+//
+//                    }
+//                },yeartemp,Month,Date);
+//                datepicker.setTitle("Select date");
+//                datepicker.show();
+                DatePickerPopWin pickerPopWin = new DatePickerPopWin.Builder(RegistrationActivity.this, new DatePickerPopWin.OnDatePickedListener() {
                     @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-
-                       editdob.setText(year+"-"+(month+1)+"-"+dayOfMonth);
-
-
-
+                    public void onDatePickCompleted(int year, int month, int day, String dateDesc) {
+//                        Toast.makeText(RegistrationActivity.this, dateDesc, Toast.LENGTH_SHORT).show();
+                        if (Year-year<18)
+                        {
+                            showToast("You must be atleast 18 years old !",false);
+                        }
+                        else
+                        {
+                            editdob.setText(year + "-" + (month) + "-" + day);
+                        }
                     }
-                },Year,Month,Date);
-                datepicker.setTitle("Select Date");
-                datepicker.show();
+                }).textConfirm("Done") //text of confirm button
+                        .textCancel("Cancel") //text of cancel button
+                        .btnTextSize(20) // button text size
+                        .viewTextSize(40) // pick view text size.
+                        .colorCancel(Color.parseColor("#000000")) //color of cancel button
+                        .colorConfirm(Color.parseColor("#000000"))//color of confirm button
+                        .minYear(1950) //min year in loop
+                        .maxYear(2100) // max year in loop
+                        .showDayMonthYear(true) // shows like dd mm yyyy (default is false)
+                        .dateChose(datechoose) // date chose when init popwindow
+                        .build();
+
+//                pickerPopWin.setBackgroundDrawable(getResources().getDrawable(R.drawable.tags_rounded_corners));
+
+
+                pickerPopWin.showPopWin(RegistrationActivity.this);
             }
         });
 //        editloc.setOnClickListener(new View.OnClickListener() {
@@ -473,6 +784,66 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
 //                }
 //            }
 //        });
+        editheight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View view = getCurrentFocus();
+                if (view != null) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
+                spinheight.setVisibility(View.VISIBLE);
+                spinheight.performClick();
+            }
+        });
+        spinheight.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position!=0)
+                {
+                    editheight.setText(listHeight.get(position).getName());
+                    spinheight.setVisibility(View.INVISIBLE);
+                }
+                else {
+                    spinheight.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        editweight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View view = getCurrentFocus();
+                if (view != null) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
+                spinweight.setVisibility(View.VISIBLE);
+                spinweight.performClick();
+            }
+        });
+        spinweight.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position!=0)
+                {
+                    editweight.setText(listweight.get(position).getName());
+                    spinweight.setVisibility(View.INVISIBLE);
+                }
+                else {
+                    spinweight.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         textViewPrivacy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -483,7 +854,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
             }
         });
 
-        editethnicity.setText("ETHNICITY");
+//        editethnicity.setText("Ethnicity:");
         editethnicity.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -517,7 +888,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                         });
                     }
                 });
-                editethnicity.setText("ETHNICITY");
+                editethnicity.setText("Ethnicity:");
                 others=false;
                 spinethnic.setVisibility(View.VISIBLE);
                 spinethnic.performClick();
@@ -530,15 +901,18 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         spinethnic.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
                 pos=position;
               if(selected) {
                   if(position!=0) {
-                      if(!listitems.get(position).getName().equals("OTHERS")){
+                      if(!listitems.get(position).getName().equals("Other")){
 
-                          EthnicityId = list.get(position - 1).getEthnicityId();
-                          String name = list.get(position - 1).getEthnicityTitle();
+                          EthnicityId = list.get(position-1).getEthnicityId();
+                          String name = list.get(position-1).getEthnicityTitle();
 //                    showToast(EthnicityTitle);
                           editethnicity.setText(name);
+
+
                           spinethnic.setVisibility(View.INVISIBLE);
                           selected = false;
                       }
@@ -559,7 +933,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                               }
                           });
 
-                          editethnicity.setHint("Please Specify");
+                          editethnicity.setHint("Please specify");
                           editethnicity.setText("");
                           editethnicity.setOnTouchListener(new View.OnTouchListener() {
                               @Override
@@ -574,6 +948,8 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
 
                       }
                   }
+
+
               }
 
 
@@ -589,6 +965,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
             public void onClick(View v) {
                 if (!others) {
                     spinethnic.setVisibility(View.VISIBLE);
+                    adapter.notifyDataSetChanged();
 
 
                     spinethnic.performClick();
@@ -623,78 +1000,115 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         reg_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(RegistrationActivity.this,Registration_2_Activity.class);
-                startActivity(intent);
-//                UploadImageTask(f);
-//               checkRegistration();
+//          Intent intent=new Intent(RegistrationActivity.this,Registration_2_Activity.class);
+//              startActivity(intent);
+//               UploadImageTask(f);
+                try {
+                    View view = getCurrentFocus();
+                    if (view != null) {
+                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    }
+                }catch (Exception e)
+                {}
+            checkRegistration();
             }
         });
 
     }
 
     private void checkRegistration() {
-        if(checkname()&&checklastname()&&checkUsername()&&checkemail()&&checkpassword()&&checkdob()&&checkloc()&&checkheight()&&checkweight()&&checkethnicity()&&checkrequired()&&checkprivacy())
+        if(checkname()&&checklastname()&&checkUsername()&&checkemail()&&checkpassword()&&checkdob()&&checkloc()&&checkheight()&&checkweight()&&checkethnicity()&&checkrequired()&&checkgender()&&checkilike()&&checkprivacy())
         {
             submitreg();
 //            showToast(iLike);
         }
     }
 
-    private boolean checkUsername() {
-        SuserName=editTextUsername.getText().toString().trim();
-        if (SuserName.isEmpty())
+    private boolean checkilike() {
+        if (iLike.isEmpty())
         {
-            editTextUsername.setError("Please enter user name");
-            editTextUsername.post(new Runnable() {
-                @Override
-                public void run() {
-                    editTextUsername.requestFocus();
-                    editTextUsername.setFocusable(true);
-                    editTextUsername.setFocusableInTouchMode(true);
-                }
-            });
-
+            scrollingView.fullScroll(View.FOCUS_UP);
+//            StyleableToast.makeText(this, "Please select like preference", Toast.LENGTH_LONG, R.style.myStyle).show();
+           showToast("Please select you like male, female or both",false);
             return false;
         }
-        else
-        {
+        else {
             return true;
         }
 
     }
 
+    private boolean checkgender() {
+        if (gender.isEmpty())
+        {
+//            StyleableToast.makeText(this, "Please select gender", Toast.LENGTH_LONG, R.style.StyledToast).show();
+            scrollingView.smoothScrollTo(0,0);
+          showToast("Please select your gender",false);
+            return false;
+        }
+        else {
+            return true;
+        }
+
+    }
+
+
+
     private boolean checkpassword() {
 
-        Spassword=editpass.getText().toString().trim();
-        if (fbid.isEmpty()) {
-            if (Spassword.isEmpty()) {
-                editpass.setError("Please enter valid password");
-                editpass.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        editpass.setFocusable(true);
-                        editpass.setFocusableInTouchMode(true);
-                        editpass.requestFocus();
-                    }
-                });
 
-                return false;
-            } else {
-                if (Spassword.length() < 6) {
-                    editpass.setError("Password length must be greater than 6");
+
+        String temp=editpass.getText().toString().trim();
+        Spassword=String.valueOf(Html.fromHtml(temp));
+        if (fbid.isEmpty()) {
+            if (Confirmpass.getText().toString().trim().equals(Spassword)) {
+                if (Spassword.isEmpty()) {
+//                    editpass.setError("Please enter valid password");
+//                    showToast("Please enter valid password");
+                    errorpassword.setVisibility(View.VISIBLE);
                     editpass.post(new Runnable() {
                         @Override
                         public void run() {
                             editpass.setFocusable(true);
                             editpass.setFocusableInTouchMode(true);
                             editpass.requestFocus();
+                            editpass.setImeOptions(EditorInfo.IME_ACTION_DONE);
                         }
                     });
-                    return false;
+                    scrollingView.smoothScrollTo(0,320);
 
+                    return false;
                 } else {
-                    return true;
+                    if (Spassword.length() < 6) {
+//                        editpass.setError("Password length must be greater than 6");
+//                        showToast("Password needs  minimum 6 characters !");
+                        errorpassword.setVisibility(View.VISIBLE);
+                        editpass.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                editpass.setFocusable(true);
+                                editpass.setFocusableInTouchMode(true);
+                                editpass.requestFocus();
+                                editpass.setImeOptions(EditorInfo.IME_ACTION_DONE);
+                            }
+                        });
+                        scrollingView.smoothScrollTo(0,320);
+                        return false;
+
+                    } else {
+                        return true;
+                    }
                 }
+            }
+            else {
+//                Confirmpass.setError("Password and confirm password must be same");
+//                showToast("Password and confirm password does not match !");
+                errorconfirmpassword.setVisibility(View.VISIBLE);
+                scrollingView.smoothScrollTo(0,370);
+                Confirmpass.requestFocus();
+                Confirmpass.setImeOptions(EditorInfo.IME_ACTION_DONE);
+                return false;
             }
         }
         else {
@@ -703,18 +1117,23 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
     }
 
     private boolean checklastname() {
-        Lname=editTextlastname.getText().toString().trim();
+        String temp=editTextlastname.getText().toString().trim();
+        Lname=String.valueOf(Html.fromHtml(temp));
         if (Lname.isEmpty())
         {
-            editTextlastname.setError("Please enter Last name");
+//            editTextlastname.setError("Please enter last name");
+//            showToast("Please enter last name");
+            errorlastname.setVisibility(View.VISIBLE);
             editTextlastname.post(new Runnable() {
                 @Override
                 public void run() {
                     editTextlastname.setFocusable(true);
                     editTextlastname.setFocusableInTouchMode(true);
                     editTextlastname.requestFocus();
+                    editTextlastname.setImeOptions(EditorInfo.IME_ACTION_DONE);
                 }
             });
+            scrollingView.smoothScrollTo(0,170);
 
             return false;
         }
@@ -730,7 +1149,8 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
             return true;
         }
         else {
-            showSnackBar("Please Accept Privacy Policy",false);
+            scrollingView.fullScroll(View.FOCUS_DOWN);
+            showSnackBar("Please accept privacy policy",false);
             return false;
         }
     }
@@ -738,6 +1158,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
 
 
     private boolean checkrequired() {
+
         Slookingfor=editlookingfor.getText().toString().trim();
 
 
@@ -747,28 +1168,29 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
     private boolean checkethnicity() {
 //        Sethnicity=listitems.get(pos).getName();
         Sethnicity=editethnicity.getText().toString().trim();
-        if (EthnicityId.equals("0"))
-        {
-            if (!Sethnicity.isEmpty())
-            {
-                EthnicityTitle=Sethnicity;
-                return true;
-            }
-            else {
-                showToast("Please Select Ethnicity");
-                return false;
-            }
-        }
-        else {
-            if (Sethnicity.equals("ETHNICITY"))
-            {
-                showToast("Please select Ethnicity");
-                return false;
-            }
-            else {
-                return true;
-            }
-        }
+        return true;
+//        if (EthnicityId.equals("0"))
+//        {
+//            if (!Sethnicity.isEmpty())
+//            {
+//                EthnicityTitle=Sethnicity;
+//                return true;
+//            }
+//            else {
+//                showToast("Please Select Ethnicity");
+//                return false;
+//            }
+//        }
+//        else {
+//            if (Sethnicity.equals("ETHNICITY"))
+//            {
+//                showToast("Please select Ethnicity");
+//                return false;
+//            }
+//            else {
+//                return true;
+//            }
+//        }
 
 
 
@@ -802,12 +1224,17 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
     }
 
     private boolean checkloc() {
-        Sloc=editloc.getText().toString().trim();
+        String temp= editloc.getText().toString().trim();
+        Sloc=String.valueOf(Html.fromHtml(temp));
         if (Sloc.isEmpty())
         {
 
-            editloc.setError("please select location");
+//            editloc.setError("please select location");
+//            showToast("Please enter where you live !");
+            errorlocation.setVisibility(View.VISIBLE);
             editloc.requestFocus();
+            editloc.setImeOptions(EditorInfo.IME_ACTION_DONE);
+            scrollingView.smoothScrollTo(0,520);
             return false;
         }
         else
@@ -821,8 +1248,12 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         Sdob=editdob.getText().toString().trim();
         if (Sdob.isEmpty())
         {
-            editdob.setError("please select date of Birth");
+//            editdob.setError("please select date of birth");
+//            showToast("Please select date of birth !");
+            errordob.setVisibility(View.VISIBLE);
             editdob.requestFocus();
+
+            scrollingView.smoothScrollTo(0,420);
             return false;
         }
         else
@@ -832,18 +1263,24 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
     }
 
     private boolean checkemail() {
-        Semail=editemail.getText().toString().trim();
+        String temp=editemail.getText().toString().trim();
+        Semail=String.valueOf(Html.fromHtml(temp));
         if (Semail.isEmpty())
         {
-            editemail.setError("please enter Valid email");
+//            editemail.setError("please enter valid email");
+//            showToast("Invalid Email Address !");
+            erroremail.setVisibility(View.VISIBLE);
             editemail.post(new Runnable() {
                 @Override
                 public void run() {
                     editemail.setFocusable(true);
                     editemail.setFocusableInTouchMode(true);
+
                     editemail.requestFocus();
+                    editemail.setImeOptions(EditorInfo.IME_ACTION_DONE);
                 }
             });
+            scrollingView.smoothScrollTo(0,270);
 
             return false;
         }
@@ -853,41 +1290,80 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                 return true;
             }
             else {
-                editemail.setError("please enter Valid email");
+                erroremail.setVisibility(View.VISIBLE);
+
                 editemail.post(new Runnable() {
                     @Override
                     public void run() {
                         editemail.setFocusable(true);
+
                         editemail.setFocusableInTouchMode(true);
+
                         editemail.requestFocus();
+                        editemail.setImeOptions(EditorInfo.IME_ACTION_DONE);
                     }
                 });
+                scrollingView.smoothScrollTo(0,270);
                 return false;
             }
         }
     }
 
     private boolean checkname() {
-        Fname=editTextfirstname.getText().toString().trim();
+        String temp=editTextfirstname.getText().toString().trim();
+        Fname=String.valueOf(Html.fromHtml(temp));
         if (Fname.isEmpty())
         {
-            editTextfirstname.setError("Please Enter first name");
+            errorFirstname.setVisibility(View.VISIBLE);
+
+
+//            editTextfirstname.setError("Please enter first name");
             editTextfirstname.post(new Runnable() {
                 @Override
                 public void run() {
                     editTextfirstname.setFocusable(true);
                     editTextfirstname.setFocusableInTouchMode(true);
                     editTextfirstname.requestFocus();
+                    editTextfirstname.setImeOptions(EditorInfo.IME_ACTION_DONE);
+
                 }
             });
 
+            scrollingView.smoothScrollTo(0,120);
             return false;
         }
         else {
             return true;
         }
     }
+    private boolean checkUsername() {
+        String temp=editTextUsername.getText().toString().trim();
+        SuserName= String.valueOf(Html.fromHtml(temp));
+//        showToast(SuserName);
+        if (SuserName.isEmpty())
+        {
+//            editTextUsername.setError("Please enter user name");
+//            showToast("Please enter user name");
+            errorusername.setVisibility(View.VISIBLE);
+            editTextUsername.post(new Runnable() {
+                @Override
+                public void run() {
+                    editTextUsername.requestFocus();
+                    editTextUsername.setFocusable(true);
+                    editTextUsername.setFocusableInTouchMode(true);
+                    editTextUsername.setImeOptions(EditorInfo.IME_ACTION_DONE);
+                }
+            });
+            scrollingView.smoothScrollTo(0,220);
 
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+
+    }
     @Override
     protected void onResume() {
         super.onResume();
@@ -915,6 +1391,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
     }
     private void initui() {
         userpic= (RoundedImageView) findViewById(R.id.user_profilepic);
+        userpic.setImageDrawable(getResources().getDrawable(R.drawable.cmra));
         iam= (TextView) findViewById(R.id.iam);
         picedit= (ImageView) findViewById(R.id.imageEdit);
         Linearfemale= (LinearLayout) findViewById(R.id.layout_female);
@@ -928,18 +1405,50 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         editdob= (EditText) findViewById(R.id.editTextDob);
         editloc= (EditText) findViewById(R.id.editTextlocation);
         rg= (RadioGroup) findViewById(radio);
+
+
         editheight= (EditText) findViewById(R.id.editTextHeight);
         editweight= (EditText) findViewById(R.id.editTextWeight);
         editethnicity= (EditText) findViewById(R.id.editTextehnic);
         editlookingfor= (EditText) findViewById(R.id.editTextiamLookingfor);
         spinethnic= (AppCompatSpinner) findViewById(R.id.spinnerEthnicity);
+        spinheight= (AppCompatSpinner) findViewById(R.id.spinnerHeight);
+        try {
+            Field popup = Spinner.class.getDeclaredField("mPopup");
+            popup.setAccessible(true);
+
+            // Get private mPopup member variable and try cast to ListPopupWindow
+            android.widget.ListPopupWindow popupWindow = (android.widget.ListPopupWindow) popup.get(spinheight);
+
+            // Set popupWindow height to 500px
+            popupWindow.setHeight(500);
+        }
+        catch (NoClassDefFoundError | ClassCastException | NoSuchFieldException | IllegalAccessException e) {
+            // silently fail...
+        }
+        spinweight= (AppCompatSpinner) findViewById(R.id.spinnerweight);
+        try {
+            Field popup = Spinner.class.getDeclaredField("mPopup");
+            popup.setAccessible(true);
+
+            // Get private mPopup member variable and try cast to ListPopupWindow
+            android.widget.ListPopupWindow popupWindow = (android.widget.ListPopupWindow) popup.get(spinweight);
+
+            // Set popupWindow height to 500px
+            popupWindow.setHeight(500);
+        }
+        catch (NoClassDefFoundError | ClassCastException | NoSuchFieldException | IllegalAccessException e) {
+            // silently fail...
+        }
         reg_next= (ImageView) findViewById(R.id.register_next);
+        Confirmpass= (EditText) findViewById(R.id.editTextconfirmpass);
         editTextfirstname= (EditText) findViewById(R.id.editextfirstName);
         editTextlastname= (EditText) findViewById(R.id.editextlastname);
         checkBoxprivacy= (CheckBox) findViewById(R.id.checkboxPrivacy);
         textViewPrivacy= (TextView) findViewById(R.id.textprivacypolicy);
         Typeface typeface=Typeface.createFromAsset(getAssets(),"fonts/brandon_grotesque_bold.ttf");
         Typeface typeface1=Typeface.createFromAsset(getAssets(),"fonts/BrandonGrotesque-Regular.ttf");
+        Confirmpass.setTypeface(typeface1);
         textilike.setTypeface(typeface1);
         textloooking.setTypeface(typeface1);
         editTextfirstname.setTypeface(typeface1);
@@ -952,6 +1461,8 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         editweight.setTypeface(typeface1);
         editlookingfor.setTypeface(typeface1);
         iam.setTypeface(typeface1);
+        editTextUsername= (EditText) findViewById(R.id.editTextusername);
+        editTextUsername.setTypeface(typeface1);
         editethnicity.setTypeface(typeface1);
         likemale= (LinearLayout) findViewById(R.id.layout_like_male);
         likefemale= (LinearLayout) findViewById(R.id.layout_like_female);
@@ -965,126 +1476,203 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         textlikemale.setTypeface(typeface);
         textheadlike.setTypeface(typeface1);
         imageViewSpinner= (ImageView) findViewById(R.id.imageSpinner);
-        editTextUsername= (EditText) findViewById(R.id.editTextusername);
-        editTextUsername.setTypeface(typeface1);
+
+        errorFirstname= (RelativeLayout) findViewById(R.id.errorfirstname);
+        errorlastname= (RelativeLayout) findViewById(R.id.errorlastname);
+        errorusername= (RelativeLayout) findViewById(R.id.errorusername);
+        erroremail= (RelativeLayout) findViewById(R.id.erroremail);
+        errorpassword= (RelativeLayout) findViewById(R.id.errorpassword);
+        errorconfirmpassword= (RelativeLayout) findViewById(R.id.errorconfirmpassword);
+        errordob= (RelativeLayout) findViewById(R.id.errordob);
+        errorlocation= (RelativeLayout) findViewById(R.id.errorlocation);
+        scrollingView= (ScrollView) findViewById(R.id.scroll);
+
 
     }
     private void submitreg() {
 
-        final ProgressDialog pd = new ProgressDialog(this);
-        pd.setMessage("Loading");
-        pd.setCancelable(false);
-        pd.show();
+//        final ProgressDialog pd = new ProgressDialog(this);
+//        pd.setMessage("Loading");
+//        pd.setCancelable(false);
+//        pd.show();
+//        progressDialog.show();
+        showProgress();
 
+//        builder= new MaterialDialog.Builder(this)
+//                .backgroundColor(Color.TRANSPARENT)
+//                .backgroundColorRes(R.color.thistle)
+//                .content(R.string.please_wait)
+//                .progress(true, 0)
+//                .show();
         HashMap<String, String> params = new HashMap<>();
-        params.put("user_email",Semail);
-        params.put("full_name",Fname);
-        params.put("username",SuserName);
+        params.put("user_email", Semail);
+        params.put("firstname", Fname);
+        params.put("lastname",Lname);
+        params.put("username", SuserName);
 
-        params.put("dob",Sdob);
-        if (!fbid.isEmpty())
-        {
+        params.put("dob", Sdob);
+        if (!fbid.isEmpty()) {
             params.put("fb_id", fbid);
+        } else {
+            params.put("user_password", Spassword);
         }
-        else {
-            params.put("user_password",Spassword);
-        }
-        params.put("location",cityname);
+        params.put("location", cityname);
 //        params.put("latitude",Lat);
 //        params.put("longitude",LONG);
-        params.put("gender",gender);
-        params.put("height",Sheight);
-        params.put("preference",iLike);
-        if (EthnicityId.equals("0"))
-        {
-            params.put("ethnicity_id",EthnicityId);
-            params.put("other_ethinicity",EthnicityTitle);
-        }
-        else {
-            params.put("ethnicity_id",EthnicityId);
+        params.put("gender", gender);
+        params.put("height", Sheight);
+        params.put("preference", iLike);
+        if (EthnicityId.equals("0")) {
+            params.put("ethnicity_id", EthnicityId);
+            params.put("other_ethinicity", EthnicityTitle);
+        } else {
+            params.put("ethnicity_id", EthnicityId);
         }
 
-        params.put("weight",Sweight);
+        params.put("weight", Sweight);
 
 //        params.put("looking_for",Slookingfor);
 //        params.put("preference",iLike);
         APIService service = ServiceGenerator.createService(APIService.class, RegistrationActivity.this);
-        Call<ModelRegister>call=service.register(params);
-        call.enqueue(new Callback<ModelRegister>() {
-            @Override
-            public void onResponse(Call<ModelRegister> call, Response<ModelRegister> response) {
-                if (response.isSuccessful())
-                { if (pd.isShowing()) { pd.dismiss(); }
-                    if (response.body()!=null&&response.body().getResult()!=null)
-                    {
-                        ModelRegister register=response.body();
-                        String msg=register.getResult().getMessage();
-                        String id=register.getResult().getUserId();
-                        int value=register.getResult().getValue();
-                        if (value==1)
-                        {
-                            showToast(msg);
-                            savePref(Constants.USER_ID,id);
-                            userID=id;
-                            savePref(Constants.GENDER,gender);
-                            if (fbid!=null) {
-                                savePref(Constants.EMAIL_REGISTRATION, true);
-                                savePref(Constants.FBREGISTRATION,false);
-                            }
-                            else {
-                                savePref(Constants.EMAIL_REGISTRATION, false);
-                                savePref(Constants.FBREGISTRATION,true);
-                            }
-                            if (f.length()!=0) {
-                                UploadImageTask(f);
-                            }
-                            Intent intent=new Intent(RegistrationActivity.this,Registration_2_Activity.class);
-                            startActivity(intent);
-                        }
-                        else
-                        {
-                            showToast("msg");
-                        }
+        if (!fbid.isEmpty()) {
+            Call<ModelRegister> call = service.fbregister(params);
+            call.enqueue(new Callback<ModelRegister>() {
+                @Override
+                public void onResponse(Call<ModelRegister> call, Response<ModelRegister> response) {
+                    if (response.isSuccessful()) {
+//                        progressDialog.dismiss();
+                     hideProgress();
+                        if (response.body() != null && response.body().getResult() != null) {
+                            ModelRegister register = response.body();
+                            String msg = register.getResult().getMessage();
+                            String id = register.getResult().getUserId();
+                            int value = register.getResult().getValue();
+                            if (value == 1) {
+//                                showToast(msg);
+                                savePref(Constants.USER_ID, id);
+                                userID = id;
+                                savePref(Constants.GENDER, gender);
+                                if (fbid.isEmpty()) {
+                                    savePref(Constants.EMAIL_REGISTRATION, true);
+                                    savePref(Constants.FBREGISTRATION, false);
+                                } else {
+                                    savePref(Constants.EMAIL_REGISTRATION, false);
+                                    savePref(Constants.FBREGISTRATION, true);
+                                }
+                                try{
+                                    if (f.length() != 0) {
+                                        UploadImageTask(f);
+                                    }
+                                }catch (Exception e)
+                                {
 
+                                }
+
+                                Intent intent = new Intent(RegistrationActivity.this, Registration_2_Activity.class);
+                                startActivity(intent);
+                            } else {
+                                showToast(msg,false);
+                            }
+
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<ModelRegister> call, Throwable t) {
-                showLog(t.toString(),2);
-                if (pd.isShowing()) { pd.dismiss(); }
-            }
-        });
-    }
-    void pickPhotoDialog() {
-        String[] item = { "Take Picture", "Upload From Library" };
-        AlertDialog.Builder builder = new AlertDialog.Builder(RegistrationActivity.this, R.style.AppCompatAlertDialogStyle);
+                @Override
+                public void onFailure(Call<ModelRegister> call, Throwable t) {
+                    showLog(t.toString(), 2);
+//                    builder.dismiss();
+                    hideProgress();
+//                    progressDialog.dismiss();
+                }
+            });
+        } else {
+            Call<ModelRegister> call = service.register(params);
+            call.enqueue(new Callback<ModelRegister>() {
+                @Override
+                public void onResponse(Call<ModelRegister> call, Response<ModelRegister> response) {
+                    if (response.isSuccessful()) {
+//                        progressDialog.dismiss();
+//                        builder.dismiss();
+                        hideProgress();
+                        if (response.body() != null && response.body().getResult() != null) {
+                            ModelRegister register = response.body();
+                            String msg = register.getResult().getMessage();
+                            String id = register.getResult().getUserId();
+                            int value = register.getResult().getValue();
+                            if (value == 1) {
+//                                showToast(msg);
+                                savePref(Constants.USER_ID, id);
+                                userID = id;
+                                savePref(Constants.GENDER, gender);
+                                if (fbid.isEmpty()) {
+                                    savePref(Constants.EMAIL_REGISTRATION, true);
+                                    savePref(Constants.FBREGISTRATION, false);
+                                } else {
+                                    savePref(Constants.EMAIL_REGISTRATION, false);
+                                    savePref(Constants.FBREGISTRATION, true);
+                                }
+                                try{
+                                    if (f.length() != 0) {
+                                        UploadImageTask(f);
+                                    }
+                                }catch (Exception e)
+                                {
 
-        builder.setTitle("UPLOAD IMAGE").setItems(item,
-                new DialogInterface.OnClickListener() {
+                                }
 
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent(RegistrationActivity.this, Registration_2_Activity.class);
+                                startActivity(intent);
+                            } else {
+                                showToast(msg,false);
+                            }
 
-                        switch (which) {
-                            case 0:
-                                takePicture();
-                                break;
-                            case 1:
-
-                                openGallery();
-
-
-                                break;
-                            default:
-                                break;
                         }
                     }
+                }
 
-
-                }).setNegativeButton("CANCEL",null);
-        builder.show();
+                @Override
+                public void onFailure(Call<ModelRegister> call, Throwable t) {
+                    showLog(t.toString(), 2);
+//                    builder.dismiss();
+                    hideProgress();
+//                    progressDialog.dismiss();
+                }
+            });
+        }
+    }
+    void pickPhotoDialog() {
+//        String[] item = { "Take picture", "Upload from library" };
+//        AlertDialog.Builder builder = new AlertDialog.Builder(RegistrationActivity.this, R.style.AppCompatAlertDialogStyle);
+//
+//        builder.setTitle("UPLOAD IMAGE").setItems(item,
+//                new DialogInterface.OnClickListener() {
+//
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//
+//                        switch (which) {
+//                            case 0:
+//                                takePicture();
+//                                break;
+//                            case 1:
+//
+//                                openGallery();
+//
+//
+//                                break;
+//                            default:
+//                                break;
+//                        }
+//                    }
+//
+//
+//                }).setNegativeButton("CANCEL",null);
+//        builder.show();
+        Intent intent= new Intent(RegistrationActivity.this,PopupEditImage.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        startActivityForResult(intent,IMAGE_EDIT);
+        overridePendingTransition(0,0);
     }
     private void takePicture() {
 
@@ -1119,8 +1707,8 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         intent.putExtra(CropImage.IMAGE_PATH, mFileTemp.getPath());
         intent.putExtra(CropImage.SCALE, true);
 
-        intent.putExtra(CropImage.ASPECT_X, 3);
-        intent.putExtra(CropImage.ASPECT_Y, 3);
+        intent.putExtra(CropImage.ASPECT_X, 5);
+        intent.putExtra(CropImage.ASPECT_Y, 5);
 
         startActivityForResult(intent, REQUEST_CODE_CROP_IMAGE);
     }
@@ -1132,6 +1720,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
             case REQUEST_CODE_GALLERY:
                 if (resultCode == Activity.RESULT_OK) {
                     try {
+                        imagedata=true;
 
                         InputStream inputStream = getContentResolver().openInputStream(data.getData());
                         FileOutputStream fileOutputStream = new FileOutputStream(mFileTemp);
@@ -1149,6 +1738,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
             case REQUEST_CODE_TAKE_PICTURE:
 
                 if (resultCode == Activity.RESULT_OK) {
+                    imagedata=true;
                     startCropImage();
                 }
                 break;
@@ -1188,6 +1778,27 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                             }
                         }
                     });
+                }
+                break;
+            case IMAGE_EDIT:
+                if (resultCode==Activity.RESULT_OK)
+                {
+                    try {
+                        boolean gallery=data.getBooleanExtra("gallery",false);
+                        boolean camera=data.getBooleanExtra("camera",false);
+                        if (gallery)
+                        {
+                            openGallery();
+                        }
+                        if (camera)
+                        {
+                            takePicture();
+                        }
+
+                    }catch (Exception e)
+                    {
+
+                    }
                 }
                 break;
             case PLACE_PICKER_REQUEST:
@@ -1236,6 +1847,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                 break;
 
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
     public static void copyStream(InputStream input, OutputStream output)
             throws IOException {
@@ -1367,6 +1979,5 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         lat = location.getLatitude();
         lng = location.getLongitude();
     }
-
 
 }

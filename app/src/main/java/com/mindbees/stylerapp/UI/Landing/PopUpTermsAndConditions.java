@@ -13,6 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.mindbees.stylerapp.R;
+import com.mindbees.stylerapp.UTILS.Constants;
+import com.mindbees.stylerapp.UTILS.Util;
 
 /**
  * Created by User on 02-03-2017.
@@ -65,6 +67,7 @@ public class PopUpTermsAndConditions extends DialogFragment {
         agree.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Util.getUtils().savePref(Constants.FirstTime_TERMS,false);
                 dismiss();
             }
         });

@@ -9,6 +9,7 @@
     <application
         android:name=".App.Styler"
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
@@ -36,10 +37,13 @@
         </activity>
         <activity android:name=".UI.Landing.RegistrationActivity"
             android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"
             android:theme="@style/AppTheme">
 
 
         </activity>
+        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat"/> <!-- optional (needed if default theme has no action bar) -->
         <activity android:name=".UI.Landing.LoginActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
@@ -50,6 +54,24 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
            >
+
+        </activity>
+        <activity android:name=".UI.Landing.PopupdeleteTribe"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Transparent"
+            >
+
+        </activity>
+        <activity android:name=".UI.Landing.PopupEditImage"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Transparent"
+            >
+
+        </activity>
+        <activity android:name=".UI.HOME.HomeActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme">
+
 
         </activity>
         <activity

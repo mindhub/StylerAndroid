@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:background="@drawable/gastbybg"
+
     android:layout_height="match_parent">
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_margin="10dp"
-
+        android:background="@drawable/bg_splash"
+        android:alpha=".3"
 
         android:layout_height="match_parent">
+    </RelativeLayout>
 <RelativeLayout
     android:layout_width="match_parent"
+    android:layout_margin="10dp"
     android:id="@+id/HeadlayoutTermsandConditions"
     android:layout_height="wrap_content">
    <TextView
@@ -25,6 +27,8 @@
 </RelativeLayout>
     <RelativeLayout
         android:layout_width="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
 
         android:layout_above="@+id/layout_agree_disagree"
         android:layout_below="@+id/HeadlayoutTermsandConditions"
@@ -54,8 +58,10 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:id="@+id/layout_agree_disagree"
-        android:layout_margin="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
 
+        android:layout_margin="5dp"
         android:layout_alignParentBottom="true"
         android:layout_height="wrap_content">
         <LinearLayout
@@ -114,5 +120,5 @@
         </LinearLayout>
 
     </RelativeLayout>
-</RelativeLayout>
+
 </RelativeLayout>

@@ -2,8 +2,15 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:background="@drawable/gastbybg"
+
     android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:background="@drawable/gatsbybg"
+        android:alpha=".7"
+        android:layout_height="match_parent">
+
+    </RelativeLayout>
 
 
     <TextView
@@ -23,9 +30,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:srcCompat="@drawable/ic_close_icon"
-        android:layout_alignBottom="@+id/privacypolicyhead"
+        android:layout_marginTop="10dp"
+
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="17dp"
+
+        android:layout_marginRight="20dp"
         android:id="@+id/imageclose"
         android:padding="5dp" />
 
@@ -34,8 +44,8 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/privacypolicyhead"
         android:layout_marginTop="35dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:layout_alignParentEnd="true">
 
         <LinearLayout

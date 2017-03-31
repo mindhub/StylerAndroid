@@ -204,8 +204,11 @@ public class Util {
                                           String title, String message, Runnable job, Handler handler) {
         // Make the progress dialog uncancelable, so that we can gurantee
         // the thread will be done before the activity getting destroyed.
-        ProgressDialog dialog = ProgressDialog.show(
-                activity, title, message, true, false);
+
+       ProgressDialog dialog = CustomProgressDialog.nowRunningDialog(activity);
+
+
+//        dialog.show();
         new Thread(new BackgroundJob(activity, job, dialog, handler)).start();
     }
 

@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,8 +87,28 @@ public class SpinnerAdapter extends BaseAdapter {
             holder = new ViewHolder();
             Typeface typeface=Typeface.createFromAsset(_activity.getAssets(),"fonts/brandon_grotesque_bold.ttf");
             Typeface typeface1=Typeface.createFromAsset(_activity.getAssets(),"fonts/BrandonGrotesque-Regular.ttf");
-            holder.tvtitle = (TextView) v.findViewById(R.id.company);
-            holder.tvtitle.setTypeface(typeface);
+
+            holder.imageView= (ImageView) v.findViewById(R.id.imageLine);
+            if (list.get(position).getName().equals("Ethnicity"))
+            {
+                holder.imageView.setVisibility(View.GONE);
+                holder.tvtitle = (TextView) v.findViewById(R.id.company);
+                holder.tvtitle.setGravity(Gravity.CENTER);
+                holder.tvtitle.setTypeface(typeface);
+            }
+            else
+            {
+                holder.tvtitle = (TextView) v.findViewById(R.id.company);
+                holder.imageView.setVisibility(View.VISIBLE);
+                holder.tvtitle.setGravity(Gravity.LEFT);
+                holder.tvtitle.setTypeface(typeface1);
+            }
+//            if (list.get(position).getName().equals("Others"))
+//            {
+//                holder.imageView.setVisibility(View.INVISIBLE);
+//            }
+
+
 //            holder.ivselector = (ImageView) v.findViewById(R.id.imgSelector);
 //			holder.imgShop = (ImageView) v.findViewById(R.id.categryIcon);
 
@@ -103,6 +124,7 @@ public class SpinnerAdapter extends BaseAdapter {
 
     class ViewHolder {
         TextView tvtitle;
+        ImageView imageView;
 
     }
 }
