@@ -2,39 +2,36 @@ package com.mindbees.stylerapp.UI.Landing;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.mindbees.stylerapp.R;
 import com.mindbees.stylerapp.UI.Adapter.GridRecycleAdapter;
-import com.mindbees.stylerapp.UI.Adapter.SpinnerAdapter;
 import com.mindbees.stylerapp.UI.Base.BaseActivity;
-import com.mindbees.stylerapp.UI.HOME.HomeActivity;
 import com.mindbees.stylerapp.UI.Models.ImagegridModel;
-import com.mindbees.stylerapp.UI.Models.Tribes.Result;
-import com.mindbees.stylerapp.UI.Models.SpinnerModel;
+
+import com.mindbees.stylerapp.UI.Models.Tribes.Female;
+import com.mindbees.stylerapp.UI.Models.Tribes.Male;
 import com.mindbees.stylerapp.UI.Models.Tribes.ModelTribes;
+import com.mindbees.stylerapp.UI.Models.Tribes.Result;
 import com.mindbees.stylerapp.UI.Models.update_profile.ModelUpdateProfile;
-import com.mindbees.stylerapp.UI.Splash.SplashActivity;
+import com.mindbees.stylerapp.UI.POPUPS.PopUpAddTribe;
+import com.mindbees.stylerapp.UI.POPUPS.PopupdeleteTribe;
 import com.mindbees.stylerapp.UTILS.Constants;
 import com.mindbees.stylerapp.UTILS.ItemClickSupport;
 import com.mindbees.stylerapp.UTILS.Retrofit.APIService;
@@ -55,6 +52,8 @@ import retrofit2.Response;
  */
 
 public class Registration_2_Activity extends BaseActivity{
+    boolean loaded=false;
+    int k;
 //    AppCompatSpinner spin;
 MaterialDialog builder;
 private AlertDialog progressDialog;
@@ -65,7 +64,8 @@ FragmentManager mFragmentManager;
     FragmentTransaction mFragmentTransaction;
 //    public List<SpinnerModel> listitems;
 private RecyclerView recyclerView;
-    List<Result>list;
+    List<Male>list1;
+    List<Female>list2;
     RelativeLayout other;
     ImageView Register_next;
     FrameLayout enlarged;
@@ -75,8 +75,8 @@ private RecyclerView recyclerView;
     TextView selected_text_name;
     GridRecycleAdapter adapter;
     ImageView image_enlarged;
-    public ArrayList<ImagegridModel>gridItems;
     public ArrayList<ImagegridModel>temp;
+    public ArrayList<ImagegridModel>gridItems;
     TextView othertext;
     StringBuilder otherbuild;
 //    ImageView userpic,reg_next;
@@ -84,10 +84,12 @@ private RecyclerView recyclerView;
     TextView style;
 //    EditText tribes;
 RecyclerView.LayoutManager mLayoutManager;
+    ScrollView scrollview;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.registration_2_layout);
+        setupUI(findViewById(R.id.registrationlayout_2));
         initUi();
         otherbuild=new StringBuilder();
         idadder=new StringBuilder();
@@ -114,6 +116,7 @@ RecyclerView.LayoutManager mLayoutManager;
 
     private void initRecyclerview() {
         recyclerView= (RecyclerView) findViewById(R.id.recyclerView);
+
         recyclerView.setHasFixedSize(true);
         mLayoutManager = new GridLayoutManager(this, 3);
         recyclerView.setLayoutManager(mLayoutManager);
@@ -137,10 +140,10 @@ RecyclerView.LayoutManager mLayoutManager;
 //                .content(R.string.please_wait)
 //                .progress(true, 0)
 //                .show();
-        showProgress();
+//showProgress();
         HashMap<String, String> params = new HashMap<>();
-        String gender=getPref(Constants.GENDER);
-        params.put("gender",gender);
+        final String gender=getPref(Constants.GENDER);
+        params.put("gender","mf");
         APIService service = ServiceGenerator.createService(APIService.class, Registration_2_Activity.this);
         Call<ModelTribes>call=service.gettribes(params);
         call.enqueue(new Callback<ModelTribes>() {
@@ -148,37 +151,57 @@ RecyclerView.LayoutManager mLayoutManager;
             public void onResponse(Call<ModelTribes> call, Response<ModelTribes> response) {
                 if (response.isSuccessful())
                 {
+//                    hideProgress();
 //                    builder.dismiss();
-                    final Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            hideProgress();
-
-                        }
-
-
-                    }, 500);
+//                    final Handler handler = new Handler();
+//                    handler.postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            hideProgress();
+//
+//                        }
+//
+//
+//                    }, 1000);
 
 //                    if (pd.isShowing()) { pd.dismiss(); }
 //                    progressDialog.dismiss();
                     if (response.body()!=null&&response.body().getResult()!=null)
-                    {
+                    { gridItems.clear();
                         ModelTribes modeltribes=response.body();
-                        list=modeltribes.getResult();
-                        gridItems.clear();
-                        for (int i=0;i<list.size();i++)
+                        if (gender.equals("m"))
                         {
-                            ImagegridModel model=new ImagegridModel();
-                            model.setSelected(false);
-                            model.setTribeImage(list.get(i).getTribeImg());
-                            model.setTribeName(list.get(i).getTribeTitle());
-                            gridItems.add(model);
+                            list1=modeltribes.getResult().getMale();
+                            for (int i=0;i<list1.size();i++)
+                            {
+                                ImagegridModel model=new ImagegridModel();
+                                model.setSelected(false);
+                           model.setTribeImage(list1.get(i).getTribeImg());
+                           model.setTribeName(list1.get(i).getTribeTitle());
+                                gridItems.add(model);
 
+                            }
                         }
+                        if (gender.equals("f"))
+                        {
+                          list2=modeltribes.getResult().getFemale();
+                            for (int i=0;i<list1.size();i++)
+                            {
+                                ImagegridModel model=new ImagegridModel();
+                                model.setSelected(false);
+                                model.setTribeImage(list1.get(i).getTribeImg());
+                                model.setTribeName(list1.get(i).getTribeTitle());
+                                gridItems.add(model);
+
+                            }
+                        }
+
+//
                         adapter.notifyDataSetChanged();
+
+
 //                        SpinnerModel model=new SpinnerModel();
-//                        model.setName("Mens Tribes");
+//                        model.setName("Mens Tribe");
 //                        listitems.add(model);
 //                        for (int i=0;i<list.size();i++)
 //                        {
@@ -196,13 +219,18 @@ RecyclerView.LayoutManager mLayoutManager;
             public void onFailure(Call<ModelTribes> call, Throwable t) {
 //               progressDialog.dismiss();
 //                builder.dismiss();
-                hideProgress();
+              //  hideProgress();
                 showToast("Network Error",false);
 
             }
         });
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
 
+
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -222,18 +250,21 @@ RecyclerView.LayoutManager mLayoutManager;
                     }
                     else {
 //                    showToast(myValue);
-                        OTHERTRIBENAME = myValue;
-                        otherbuild.append(OTHERTRIBENAME);
-                        otherbuild.append(",");
-                        idadder.append("0");
-                        idadder.append(",");
+//                        OTHERTRIBENAME = myValue;
+//                        otherbuild.append(OTHERTRIBENAME);
+//                        otherbuild.append(",");
+//                        idadder.append("0");
+//                        idadder.append(",");
 
                         ImagegridModel model = new ImagegridModel();
                         model.setSelected(false);
                         model.setTribeName(myValue);
                         model.setTribeImage("");
                         gridItems.add(model);
+                        recyclerView.smoothScrollToPosition(gridItems.size()-1);
                         adapter.notifyDataSetChanged();
+//                        recyclerView.scrollToPosition(gridItems.size()-1);
+//                        scrollview.fullScroll(View.FOCUS_DOWN);
 //                    othertextlayout.setVisibility(View.VISIBLE);
                     }
 //                    othertext.setText(myValue);
@@ -317,15 +348,32 @@ RecyclerView.LayoutManager mLayoutManager;
               {
                  if (gridItems.get(i).isSelected())
                  {
-                     builder.append( list.get(i).getTribeId());
-                    builder.append(",");
+                     String gender=getPref(Constants.GENDER);
+                     if (gender.equals("m")) {
+                         builder.append(list1.get(i).getTribeId());
+                         builder.append(",");
+                     }
+                     if (gender.equals("f"))
+                     {
+                         builder.append(list2.get(i).getTribeId());
+                         builder.append(",");
+                     }
                  }
               }
-              if (!OTHERTRIBENAME.isEmpty())
-              {
-                  OTHERTRIBENAME=idadder.toString();
-                  builder.append(OTHERTRIBENAME);
-              }
+               for (int i=0;i<gridItems.size();i++)
+               {
+                   if (gridItems.get(i).getTribeImage().isEmpty())
+                   {
+                       OTHERTRIBENAME=gridItems.get(i).getTribeName();
+                       otherbuild.append(OTHERTRIBENAME);
+                       otherbuild.append(",");
+                   }
+               }
+               if (!OTHERTRIBENAME.isEmpty())
+               {
+
+                   builder.append("0");
+               }
               String build=builder.toString();
 //              showToast(builder.toString());
                getWebservice(build);
@@ -363,7 +411,10 @@ RecyclerView.LayoutManager mLayoutManager;
                         recyclerView.setVisibility(View.GONE);
                         other.setVisibility(View.GONE);
                         tribelayout.setBackgroundColor(getResources().getColor(R.color.lavender));
-                        Picasso.with(Registration_2_Activity.this).load(gridItems.get(position).getTribeImage()).into(image_enlarged);
+//                        Glide.with(Registration_2_Activity.this).load(gridItems.get(position).getTribeImage()).thumbnail(.5f)
+//                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                                .into(image_enlarged);
+                       Picasso.with(Registration_2_Activity.this).load(gridItems.get(position).getTribeImage()).into(image_enlarged);
                         style.setText(gridItems.get(position).getTribeName());
                         selectedButton.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -425,7 +476,7 @@ RecyclerView.LayoutManager mLayoutManager;
             params.put("usertribes", build);
             if (!OTHERTRIBENAME.isEmpty())
             {
-                params.put("othertribe",otherbuild.toString());
+                params.put("other_tribe",otherbuild.toString());
             }
             final APIService service = ServiceGenerator.createService(APIService.class, Registration_2_Activity.this);
             Call<ModelUpdateProfile>call=service.updateprofile(params);
@@ -444,7 +495,7 @@ RecyclerView.LayoutManager mLayoutManager;
                             {
                                 String msg=modelUpdateProfile.getResult().getMessage();
                               showToast("Styler tribes added",true);
-                                Intent intent=new Intent(Registration_2_Activity.this,Registratiom_3_activity.class);
+                                Intent intent=new Intent(Registration_2_Activity.this,Registration_extended.class);
                                 startActivity(intent);
                             }
                             else {
@@ -483,6 +534,7 @@ RecyclerView.LayoutManager mLayoutManager;
         othertext= (TextView) findViewById(R.id.otherText);
         tribelayout= (RelativeLayout) findViewById(R.id.tribe_layout);
         othertextlayout= (LinearLayout) findViewById(R.id.linearlayoutother_text);
+//        scrollview= (ScrollView) findViewById(R.id.scrollView);
 
 //        tribes= (EditText) findViewById(R.fbid.editTexttribes);
 //        tribes.setFocusable(false);

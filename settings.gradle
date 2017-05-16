@@ -1,1 +1,2 @@
-include ':app',':simple-crop-image-lib',':library'
+include ':app',':simple-crop-image-lib',':library',':multipleimageselect',':viewpagerlibrary',':mobicommons', ':mobicomkit', ':mobicomkitui',':audiovideo'
+

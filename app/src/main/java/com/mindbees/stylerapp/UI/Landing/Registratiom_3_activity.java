@@ -48,6 +48,7 @@ public class Registratiom_3_activity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.registration_3_layout);
+        setupUI(findViewById(R.id.registrationlayout_3));
         initUI();
         if (isNetworkAvailable())
         {
@@ -61,6 +62,12 @@ public class Registratiom_3_activity extends BaseActivity {
     }
 
     private void setupui() {
+        editTextdesigners.setHorizontallyScrolling(false);
+        editTextdesigners.setMaxLines(2);
+        editTextnevergo.setHorizontallyScrolling(false);
+        editTextnevergo.setMaxLines(2);
+        editTextstyleIcons.setHorizontallyScrolling(false);
+        editTextstyleIcons.setMaxLines(2);
         editTextdesigners.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {

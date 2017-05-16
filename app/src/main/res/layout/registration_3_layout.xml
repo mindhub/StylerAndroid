@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-
+android:id="@+id/registrationlayout_3"
     android:layout_height="match_parent">
     <RelativeLayout
         android:layout_width="match_parent"
@@ -34,6 +34,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
+        android:layout_marginBottom="150dp"
 
         android:layout_height="wrap_content">
 
@@ -43,6 +44,7 @@
 
         android:layout_marginRight="20dp"
         android:layout_marginLeft="20dp"
+
         android:background="@color/whitesmoke"
         android:layout_marginTop="20dp"
 
@@ -81,7 +83,7 @@
 
 
                         android:background="@color/thistle"
-                        android:layout_height="50dp">
+                        android:layout_height="60dp">
                         <TextView
                             android:layout_width="wrap_content"
                             android:paddingLeft="5dp"
@@ -108,7 +110,7 @@
                         android:hint="@string/brandhint"
 
 
-                        android:minHeight="50dp"
+                        android:minHeight="60dp"
                         android:layout_height="wrap_content" />
                     <!--<com.mindbees.stylerapp.UTILS.MultiSpinner-->
                         <!--android:layout_width="match_parent"-->
@@ -150,7 +152,7 @@
 
 
                         android:background="@color/thistle"
-                        android:layout_height="50dp">
+                        android:layout_height="60dp">
                         <TextView
                             android:layout_width="wrap_content"
                             android:paddingLeft="5dp"
@@ -176,7 +178,7 @@
                         android:paddingLeft="10dp"
                         android:hint="@string/style_hint"
 
-                        android:minHeight="50dp"
+                        android:minHeight="60dp"
                         android:layout_height="wrap_content" />
                     <!--<com.mindbees.stylerapp.UTILS.MultiSpinner-->
                         <!--android:layout_width="match_parent"-->
@@ -221,12 +223,12 @@
 
 
                         android:background="@color/thistle"
-                        android:layout_height="50dp">
+                        android:layout_height="60dp">
                         <TextView
                             android:layout_width="wrap_content"
                             android:paddingLeft="5dp"
                             android:textSize="11dp"
-                            android:text="Please enter your choice"
+                            android:text=" Please enter accessories you don't like"
                             android:textColor="@color/white"
                             android:layout_height="wrap_content" />
                         <ImageView
@@ -243,7 +245,7 @@
                         android:background="@android:color/transparent"
                         android:inputType="textPersonName|textCapSentences"
                         android:textColor="@color/black"
-                        android:minHeight="50dp"
+                        android:minHeight="60dp"
                         android:paddingLeft="10dp"
                         android:hint="@string/nevergo_hint"
                         android:layout_height="wrap_content" />

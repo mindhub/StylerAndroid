@@ -24,4 +24,10 @@ public class Constants {
     public static final String GENDER = "gender";
     public static final String FBREGISTRATION ="fbregistration" ;
     public static final java.lang.String FBLOGIN = "FBLOGIN";
+    public static final String LAT = "lat";
+    public static final String LONG = "long";
+    public static final String PASSWORD ="password" ;
+    public static final String INTENT_EXTRA_LIMIT ="limit" ;
+    public static final String USERNAME = "username";
+    public static final String ILIKE = "ilike";
 }

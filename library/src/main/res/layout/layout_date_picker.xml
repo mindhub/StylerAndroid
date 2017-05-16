@@ -16,7 +16,7 @@
         <RelativeLayout
             android:id="@+id/container_toolbar"
             android:layout_width="match_parent"
-            android:background="@color/thistle"
+            android:background="@color/thistffle"
             android:layout_height="wrap_content"
             android:padding="5dp">
 
@@ -48,7 +48,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:background="@color/thistle"
+                android:background="@color/thistffle"
                 android:layout_height="match_parent">
 
                 <com.bruce.pickerview.LoopView
@@ -56,14 +56,14 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@color/thistle"
+                    android:background="@color/thistffle"
                     app:textSize="25sp"
                     app:canLoop="false"/>
 
                 <com.bruce.pickerview.LoopView
                     android:id="@+id/picker_month"
                     android:layout_width="0dp"
-                    android:background="@color/thistle"
+                    android:background="@color/thistffle"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="1dp"
                     android:layout_weight="1"
@@ -76,7 +76,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="1dp"
                     android:layout_weight="1"
-                    android:background="@color/thistle"
+                    android:background="@color/thistffle"
                     app:centerTextColor="@color/black"
                     app:textSize="30sp"
                     app:canLoop="false"/>

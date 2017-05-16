@@ -2,21 +2,20 @@ package com.mindbees.stylerapp.UI.Landing;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.DatePickerDialog;
-import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,14 +24,13 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ScrollingView;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatSpinner;
 import android.text.Html;
-import android.text.TextUtils;
+import android.text.InputFilter;
+import android.text.Spanned;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -41,7 +39,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -51,9 +48,17 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.applozic.audiovideo.activity.AudioCallActivityV2;
+import com.applozic.audiovideo.activity.VideoActivity;
+import com.applozic.mobicomkit.Applozic;
+import com.applozic.mobicomkit.ApplozicClient;
+import com.applozic.mobicomkit.api.account.register.RegistrationResponse;
+import com.applozic.mobicomkit.api.account.user.PushNotificationTask;
+import com.applozic.mobicomkit.api.account.user.User;
+import com.applozic.mobicomkit.api.account.user.UserLoginTask;
+import com.applozic.mobicomkit.uiwidgets.ApplozicSetting;
 import com.bruce.pickerview.popwindow.DatePickerPopWin;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.places.Place;
@@ -64,20 +69,26 @@ import com.google.maps.android.SphericalUtil;
 import com.mindbees.stylerapp.R;
 import com.mindbees.stylerapp.UI.Adapter.SpinnerAdapter;
 import com.mindbees.stylerapp.UI.Base.BaseActivity;
+import com.mindbees.stylerapp.UI.HOME.HomeActivity;
+import com.mindbees.stylerapp.UI.POPUPS.POPUPHEIGHT;
+import com.mindbees.stylerapp.UI.POPUPS.PopUpWeiight;
 import com.mindbees.stylerapp.UI.Models.Ethnicity.ModelEthnicity;
 import com.mindbees.stylerapp.UI.Models.Ethnicity.Result;
 import com.mindbees.stylerapp.UI.Models.Register.ModelRegister;
 import com.mindbees.stylerapp.UI.Models.SpinnerModel;
+import com.mindbees.stylerapp.UI.POPUPS.PopupEditImage;
 import com.mindbees.stylerapp.UI.PrivacyPolicy.PrivacyPolicy;
+import com.mindbees.stylerapp.UTILS.CircleTransform;
 import com.mindbees.stylerapp.UTILS.Constants;
 import com.mindbees.stylerapp.UTILS.InternalStorageContentProvider;
 import com.mindbees.stylerapp.UTILS.Retrofit.APIService;
 import com.mindbees.stylerapp.UTILS.Retrofit.ServiceGenerator;
-import com.mindbees.stylerapp.UTILS.RoundedImageView;
 import com.mindbees.stylerapp.UTILS.Util;
 ;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -93,11 +104,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
-import java.util.concurrent.Exchanger;
 
 
-import eu.janmuller.android.simplecropimage.CropImage;
+//import eu.janmuller.android.simplecropimage.CropImage;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -109,11 +120,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-import static com.mindbees.stylerapp.R.id.editTextconfirmpass;
-import static com.mindbees.stylerapp.R.id.editextfirstName;
-import static com.mindbees.stylerapp.R.id.errorfirstname;
 import static com.mindbees.stylerapp.R.id.radio;
-import static java.lang.Math.floor;
 
 
 /**
@@ -124,6 +131,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
     String Fname,Lname,Semail,Spassword,Sdob,Sloc,Slike,Sweight,Sheight,Sethnicity="",Slookingfor,SuserName;
     String gender="";
     TextView iam;
+    boolean error=false;
     String EthnicityTitle="";
     String EthnicityId="";
     File f;
@@ -136,7 +144,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
     LinearLayout likemale,likefemale,likeboth;
     TextView textlikemale,textlikefemale,textlikeboth,textheadlike;
     SpinnerAdapter adapter;
-
+    Uri mImageCaptureUri = null;
     RelativeLayout errorFirstname,errorlastname,errorusername,erroremail,errorpassword,errorconfirmpassword,errordob,errorlocation;
 
 
@@ -145,7 +153,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
     private static final int ACCESS_FINE_LOCATION = 0;
     private LocationManager locationManager;
     private String provider;
-    RoundedImageView userpic;
+    ImageView userpic;
     LatLng southwest,northeast;
     String cityname;
     String Lat;
@@ -157,6 +165,8 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
     LatLngBounds BOUNDS_MOUNTAIN_VIEW;
     public static final int PLACE_PICKER_REQUEST = 00;
     public static final int IMAGE_EDIT=0x4;
+    public static final int EDITWEIGHT=0x5;
+    public static final int EDITHEIGHT=0x6;
     ImageView picedit,reg_next;
     private File mFileTemp;
     LinearLayout Linearmale,Linearfemale;
@@ -175,6 +185,8 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
     public List<SpinnerModel>listweight;
     public List<SpinnerModel>listHeight;
     List<Result>list;
+    private UserLoginTask mAuthTask = null;
+    boolean isphoto=false;
     ArrayList<String>listelements;
     public static final int REQUEST_CODE_GALLERY      = 0x1;
     public static final int REQUEST_CODE_TAKE_PICTURE = 0x2;
@@ -185,7 +197,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.registration_layout);
 //        progressDialog = new SpotsDialog(this, R.style.Custom);
-//        setupUI(findViewById(R.id.registrationlayout));
+        setupUI(findViewById(R.id.registrationlayout));
 
 
 
@@ -238,7 +250,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
 
     private void setSpinnner() {
         SpinnerModel model2=new SpinnerModel();
-        model2.setName("SELECT HEIGHT");
+        model2.setName("SELECT ");
         listHeight.add(model2);
        for(int i=120;i<241;i++)
 
@@ -255,7 +267,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
        SpinnerAdapter adapter=new SpinnerAdapter(RegistrationActivity.this,listHeight);
         spinheight.setAdapter(adapter);
         SpinnerModel model3=new SpinnerModel();
-        model3.setName("SELECT WEIGHT");
+        model3.setName("SELECT ");
         listweight.add(model3);
         for (int i=40;i<141;i++)
         {
@@ -312,7 +324,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         }
        String user_photo="https://graph.facebook.com/" + fbid + "/picture?type=large";
 
-        Picasso.with(this).load(user_photo).into(userpic);
+        Picasso.with(this).load(user_photo).transform(new CircleTransform()).into(userpic);
         Picasso.with(this).load(user_photo).into(new Target() {
             @Override
             public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -322,15 +334,19 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                     public void run() {
                         Bitmap bm=bitmap;
                         imagedata=true;
+                        isphoto=true;
 
                         f =new  File(Environment.getExternalStorageDirectory()
                                 + File.separator + Constants.TEMP_PHOTO_FILE);
                         try {
                             f.createNewFile();
-                            FileOutputStream ostream = new FileOutputStream(f);
-                            bm.compress(Bitmap.CompressFormat.JPEG, 80, ostream);
-                            ostream.flush();
-                            ostream.close();
+                            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                            bitmap.compress(Bitmap.CompressFormat.JPEG,40,bos);
+                            byte[] bitmapdata = bos.toByteArray();
+                            FileOutputStream fos = new FileOutputStream(f);
+                            fos.write(bitmapdata);
+                            fos.flush();
+                            fos.close();
                         } catch (IOException e) {
                             Log.e("IOException", e.getLocalizedMessage());
                         }
@@ -572,20 +588,65 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
 //                return false;
 //            }
 //        });
-//        Confirmpass.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-//            @Override
-//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-//                if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)||(actionId==EditorInfo.IME_ACTION_NEXT)) {
+        Confirmpass.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+              if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId==EditorInfo.IME_ACTION_DONE) ){
 //                    View view = getCurrentFocus();
 //                    if (view != null) {
-//                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-//                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-//                    }
-//
-//                }
-//                return false;
-//            }
-//        });
+//                       InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+//                       imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+//                   }
+                  View view = getCurrentFocus();
+                  if (view != null) {
+                      InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                      imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                  }
+                  if (error)
+                  {
+                      return false;
+                  }
+                  {
+                      errordob.setVisibility(View.GONE);
+                      final Calendar calender = Calendar.getInstance(TimeZone.getDefault());
+                      final int Year = calender.get(Calendar.YEAR);
+                      int yeartemp = Year - 18;
+                      final int Month = calender.get(Calendar.MONTH);
+                      int Date = calender.get(Calendar.DAY_OF_MONTH);
+                      String datechoose = yeartemp + "-" + (Month + 1) + "-" + Date;
+                      DatePickerPopWin pickerPopWin = new DatePickerPopWin.Builder(RegistrationActivity.this, new DatePickerPopWin.OnDatePickedListener() {
+                          @Override
+                          public void onDatePickCompleted(int year, int month, int day, String dateDesc) {
+//                        Toast.makeText(RegistrationActivity.this, dateDesc, Toast.LENGTH_SHORT).show();
+                              if (Year - year < 18) {
+                                  showToast("You must be atleast 18 years old !", false);
+                              } else {
+                                  editdob.setText(year + "-" + (month) + "-" + day);
+                                  editloc.requestFocus();
+
+                              }
+                          }
+                      }).textConfirm("Done") //text of confirm button
+                              .textCancel("Cancel") //text of cancel button
+                              .btnTextSize(20) // button text size
+                              .viewTextSize(40) // pick view text size.
+                              .colorCancel(Color.parseColor("#000000")) //color of cancel button
+                              .colorConfirm(Color.parseColor("#000000"))//color of confirm button
+                              .minYear(1950) //min year in loop
+                              .maxYear(2100) // max year in loop
+                              .showDayMonthYear(true) // shows like dd mm yyyy (default is false)
+                              .dateChose(datechoose) // date chose when init popwindow
+                              .build();
+
+//                pickerPopWin.setBackgroundDrawable(getResources().getDrawable(R.drawable.tags_rounded_corners));
+
+
+                      pickerPopWin.showPopWin(RegistrationActivity.this);
+                  }
+              }
+               return false;
+          }
+      });
 //        editloc.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 //            @Override
 //            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -631,7 +692,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                 gender="m";
                 if (!imagedata){
                     if (fbid.isEmpty()) {
-                        userpic.setImageDrawable(getResources().getDrawable(R.drawable.user_default));
+                        Picasso.with(RegistrationActivity.this).load(R.drawable.cmra).transform(new CircleTransform()).into(userpic);
                     }
                 }
 
@@ -650,7 +711,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                 gender="f";
                 if (!imagedata){
                     if (fbid.isEmpty()) {
-                        userpic.setImageDrawable(getResources().getDrawable(R.drawable.user_f));
+                        Picasso.with(RegistrationActivity.this).load(R.drawable.cmra).transform(new CircleTransform()).into(userpic);
                     }
 
                 }
@@ -747,6 +808,8 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                         else
                         {
                             editdob.setText(year + "-" + (month) + "-" + day);
+                            editloc.requestFocus();
+
                         }
                     }
                 }).textConfirm("Done") //text of confirm button
@@ -787,13 +850,24 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         editheight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                View view = getCurrentFocus();
-                if (view != null) {
-                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                }
-                spinheight.setVisibility(View.VISIBLE);
-                spinheight.performClick();
+//                LayoutInflater layoutInflater = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+//                View popupView = layoutInflater.inflate(R.layout.popupwindowheight, null);
+//                final PopupWindow popupWindow = new PopupWindow(popupView,android.view.ViewGroup.LayoutParams.WRAP_CONTENT,android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+//
+//                popupWindow.setOutsideTouchable(false);
+//                popupWindow.setFocusable(true);
+//                popupWindow.update();
+//                View view = getCurrentFocus();
+//                if (view != null) {
+//                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+//                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+//                }
+//                spinheight.setVisibility(View.VISIBLE);
+//                spinheight.performClick();
+                Intent intent= new Intent(RegistrationActivity.this,POPUPHEIGHT.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivityForResult(intent,EDITHEIGHT);
+                overridePendingTransition(0,0);
             }
         });
         spinheight.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -817,13 +891,17 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         editweight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                View view = getCurrentFocus();
-                if (view != null) {
-                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                }
-                spinweight.setVisibility(View.VISIBLE);
-                spinweight.performClick();
+                Intent intent= new Intent(RegistrationActivity.this,PopUpWeiight.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivityForResult(intent,EDITWEIGHT);
+                overridePendingTransition(0,0);
+//                View view = getCurrentFocus();
+//                if (view != null) {
+//                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+//                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+//                }
+//                spinweight.setVisibility(View.VISIBLE);
+//                spinweight.performClick();
             }
         });
         spinweight.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -1000,29 +1078,44 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         reg_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//          Intent intent=new Intent(RegistrationActivity.this,Registration_2_Activity.class);
-//              startActivity(intent);
+        Intent intent=new Intent(RegistrationActivity.this,Registration_extended.class);
+           startActivity(intent);
 //               UploadImageTask(f);
-                try {
-                    View view = getCurrentFocus();
-                    if (view != null) {
-                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                    }
-                }catch (Exception e)
-                {}
-            checkRegistration();
-            }
+//                try {
+//                    View view = getCurrentFocus();
+//                    if (view != null) {
+//                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+//                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+//                    }
+//                }catch (Exception e)
+//                {}
+//           checkRegistration();
+           }
         });
 
     }
 
     private void checkRegistration() {
-        if(checkname()&&checklastname()&&checkUsername()&&checkemail()&&checkpassword()&&checkdob()&&checkloc()&&checkheight()&&checkweight()&&checkethnicity()&&checkrequired()&&checkgender()&&checkilike()&&checkprivacy())
+        if(checkname()&&checklastname()&&checkUsername()&&checkemail()&&checkpassword()&&checkdob()&&checkloc()&&checkheight()&&checkweight()&&checkethnicity()&&checkrequired()&&checkgender()&&checkilike()&&checkprivacy()&&checkpic())
         {
             submitreg();
 //            showToast(iLike);
         }
+    }
+
+    private boolean checkpic() {
+        if (isphoto)
+        {
+
+            return true;
+        }
+        else
+        {
+            showToast("Please select a profile picture to continue",false);
+            return false;
+        }
+
+
     }
 
     private boolean checkilike() {
@@ -1106,6 +1199,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
 //                showToast("Password and confirm password does not match !");
                 errorconfirmpassword.setVisibility(View.VISIBLE);
                 scrollingView.smoothScrollTo(0,370);
+                error=true;
                 Confirmpass.requestFocus();
                 Confirmpass.setImeOptions(EditorInfo.IME_ACTION_DONE);
                 return false;
@@ -1197,8 +1291,13 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
     }
 
     private boolean checkheight() {
-        Sheight=editheight.getText().toString().trim();
-//        if (Sheight.isEmpty())
+        String temp=editheight.getText().toString().trim();
+        if (!temp.isEmpty())
+        {
+            Sheight=temp.substring(0,temp.indexOf(" "));
+        }
+
+
 //        {
 //            editheight.setError("please Enter Weight");
 //            return false;
@@ -1211,7 +1310,11 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
     }
 
     private boolean checkweight() {
-        Sweight=editweight.getText().toString().trim();
+        String temp=editweight.getText().toString().trim();
+        if (!temp.isEmpty())
+        {
+            Sweight=temp.substring(0,temp.indexOf(" "));
+        }
 //        if (Sweight.isEmpty())
 //        {
 //            editweight.setError("please enter weight");
@@ -1287,7 +1390,50 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         else {
             if (isValidEmail(Semail))
             {
-                return true;
+                boolean correct=false;
+                String[]a=Semail.split("@");
+                String temp1=a[1];
+
+                String temp2=temp1;
+                if (null!=temp1&&temp1.length()>0)
+                {
+
+                    String temp3=temp2.substring(temp2.lastIndexOf(".")+1);
+                    temp2=temp3;
+
+                }
+//                showToast(temp2);
+                String[] b={"aero", "asia", "biz", "cat", "com", "coop", "edu", "gov", "info", "int", "jobs", "mil", "mobi", "museum", "name", "net", "org", "pro", "tel", "travel", "ac", "ad", "ae", "af", "ag", "ai", "al", "am", "an", "ao", "aq", "ar", "as", "at", "au", "aw", "ax", "az", "ba", "bb", "bd", "be", "bf", "bg", "bh", "bi", "bj", "bm", "bn", "bo", "br", "bs", "bt", "bv", "bw", "by", "bz", "ca", "cc", "cd", "cf", "cg", "ch", "ci", "ck", "cl", "cm", "cn", "co", "cr", "cu", "cv", "cx", "cy", "cz", "de", "dj", "dk", "dm", "do", "dz", "ec", "ee", "eg", "er", "es", "et", "eu", "fi", "fj", "fk", "fm", "fo", "fr", "ga", "gb", "gd", "ge", "gf", "gg", "gh", "gi", "gl", "gm", "gn", "gp", "gq", "gr", "gs", "gt", "gu", "gw", "gy", "hk", "hm", "hn", "hr", "ht", "hu", "id", "ie", " No", "il", "im", "in", "io", "iq", "ir", "is", "it", "je", "jm", "jo", "jp", "ke", "kg", "kh", "ki", "km", "kn", "kp", "kr", "kw", "ky", "kz", "la", "lb", "lc", "li", "lk", "lr", "ls", "lt", "lu", "lv", "ly", "ma", "mc", "md", "me", "mg", "mh", "mk", "ml", "mm", "mn", "mo", "mp", "mq", "mr", "ms", "mt", "mu", "mv", "mw", "mx", "my", "mz", "na", "nc", "ne", "nf", "ng", "ni", "nl", "no", "np", "nr", "nu", "nz", "om", "pa", "pe", "pf", "pg", "ph", "pk", "pl", "pm", "pn", "pr", "ps", "pt", "pw", "py", "qa", "re", "ro", "rs", "ru", "rw", "sa", "sb", "sc", "sd", "se", "sg", "sh", "si", "sj", "sk", "sl", "sm", "sn", "so", "sr", "st", "su", "sv", "sy", "sz", "tc", "td", "tf", "tg", "th", "tj", "tk", "tl", "tm", "tn", "to", "tp", "tr", "tt", "tv", "tw", "tz", "ua", "ug", "uk", "us", "uy", "uz", "va", "vc", "ve", "vg", "vi", "vn", "vu", "wf", "ws", "ye", "yt", "za", "zm", "zw"};
+                for (int i=0;i<b.length;i++)
+                {
+                    if (temp2.equals(b[i]))
+                    {
+                        correct=true;
+
+                    }
+                }
+                if (correct)
+                { return true;
+
+                }
+                else {
+
+                    erroremail.setVisibility(View.VISIBLE);
+
+                    editemail.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            editemail.setFocusable(true);
+
+                            editemail.setFocusableInTouchMode(true);
+
+                            editemail.requestFocus();
+                            editemail.setImeOptions(EditorInfo.IME_ACTION_DONE);
+                        }
+                    });
+                    scrollingView.smoothScrollTo(0,270);
+                    return false;
+                }
             }
             else {
                 erroremail.setVisibility(View.VISIBLE);
@@ -1359,9 +1505,15 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
             return false;
         }
         else
-        {
+//        {Pattern pattern = Pattern.compile("\\s");
+//            Matcher matcher = pattern.matcher(SuserName);
+//            boolean found = matcher.find();
+//            if (found)
+//            {
+//
+//            }
             return true;
-        }
+
 
     }
     @Override
@@ -1390,8 +1542,8 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         return true;
     }
     private void initui() {
-        userpic= (RoundedImageView) findViewById(R.id.user_profilepic);
-        userpic.setImageDrawable(getResources().getDrawable(R.drawable.cmra));
+        userpic= (ImageView) findViewById(R.id.user_profilepic);
+        Picasso.with(RegistrationActivity.this).load(R.drawable.cmra).transform(new CircleTransform()).into(userpic);
         iam= (TextView) findViewById(R.id.iam);
         picedit= (ImageView) findViewById(R.id.imageEdit);
         Linearfemale= (LinearLayout) findViewById(R.id.layout_female);
@@ -1406,22 +1558,26 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         editloc= (EditText) findViewById(R.id.editTextlocation);
         rg= (RadioGroup) findViewById(radio);
 
-
         editheight= (EditText) findViewById(R.id.editTextHeight);
         editweight= (EditText) findViewById(R.id.editTextWeight);
         editethnicity= (EditText) findViewById(R.id.editTextehnic);
         editlookingfor= (EditText) findViewById(R.id.editTextiamLookingfor);
         spinethnic= (AppCompatSpinner) findViewById(R.id.spinnerEthnicity);
         spinheight= (AppCompatSpinner) findViewById(R.id.spinnerHeight);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int height = displayMetrics.heightPixels;
+        int width = displayMetrics.widthPixels;
         try {
             Field popup = Spinner.class.getDeclaredField("mPopup");
             popup.setAccessible(true);
 
             // Get private mPopup member variable and try cast to ListPopupWindow
             android.widget.ListPopupWindow popupWindow = (android.widget.ListPopupWindow) popup.get(spinheight);
+            int h=height/2;
 
             // Set popupWindow height to 500px
-            popupWindow.setHeight(500);
+            popupWindow.setHeight(h-20);
         }
         catch (NoClassDefFoundError | ClassCastException | NoSuchFieldException | IllegalAccessException e) {
             // silently fail...
@@ -1433,9 +1589,9 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
 
             // Get private mPopup member variable and try cast to ListPopupWindow
             android.widget.ListPopupWindow popupWindow = (android.widget.ListPopupWindow) popup.get(spinweight);
-
+            int h=height/2;
             // Set popupWindow height to 500px
-            popupWindow.setHeight(500);
+            popupWindow.setHeight(h-20);
         }
         catch (NoClassDefFoundError | ClassCastException | NoSuchFieldException | IllegalAccessException e) {
             // silently fail...
@@ -1487,6 +1643,19 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         errorlocation= (RelativeLayout) findViewById(R.id.errorlocation);
         scrollingView= (ScrollView) findViewById(R.id.scroll);
 
+        InputFilter filter = new InputFilter() {
+            public CharSequence filter(CharSequence source, int start, int end,
+                                       Spanned dest, int dstart, int dend) {
+                for (int i = start; i < end; i++) {
+                    if (Character.isWhitespace(source.charAt(i))) {
+                        return "";
+                    }
+                }
+                return null;
+            }
+
+        };
+        editTextUsername.setFilters(new InputFilter[]{filter});
 
     }
     private void submitreg() {
@@ -1508,8 +1677,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         params.put("user_email", Semail);
         params.put("firstname", Fname);
         params.put("lastname",Lname);
-        params.put("username", SuserName);
-
+        params.put("username",SuserName);
         params.put("dob", Sdob);
         if (!fbid.isEmpty()) {
             params.put("fb_id", fbid);
@@ -1524,7 +1692,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         params.put("preference", iLike);
         if (EthnicityId.equals("0")) {
             params.put("ethnicity_id", EthnicityId);
-            params.put("other_ethinicity", EthnicityTitle);
+            params.put("other_ethinicity", Sethnicity);
         } else {
             params.put("ethnicity_id", EthnicityId);
         }
@@ -1549,7 +1717,62 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                             int value = register.getResult().getValue();
                             if (value == 1) {
 //                                showToast(msg);
+//                                UserLoginTask.TaskListener listener=new UserLoginTask.TaskListener() {
+//                                    @Override
+//                                    public void onSuccess(RegistrationResponse registrationResponse, Context context) {
+//
+//                                        ApplozicClient.getInstance(context).setContextBasedChat(true).setHandleDial(true).setIPCallEnabled(true);
+//                                        Map<ApplozicSetting.RequestCode, String> activityCallbacks = new HashMap<ApplozicSetting.RequestCode, String>();
+//                                        activityCallbacks.put(ApplozicSetting.RequestCode.AUDIO_CALL, AudioCallActivityV2.class.getName());
+//                                        activityCallbacks.put(ApplozicSetting.RequestCode.VIDEO_CALL, VideoActivity.class.getName());
+//                                        ApplozicSetting.getInstance(context).setActivityCallbacks(activityCallbacks);
+////                                    ApplozicSetting.getInstance(context).setChatBackgroundColorOrDrawableResource(R.drawable.bg_splash);
+////                                    ApplozicSetting.getInstance(context).setSentMessageBackgroundColor(R.color.white);
+////                                    ApplozicSetting.getInstance(context).setReceivedMessageBackgroundColor(R.color.sentmessage_black);
+////                                    ApplozicSetting.getInstance(context).setSentMessageTextColor(R.color.black);
+////                                    ApplozicSetting.getInstance(context).setReceivedMessageTextColor(R.color.white);
+//                                        PushNotificationTask.TaskListener pushNotificationTaskListener=  new PushNotificationTask.TaskListener() {
+//                                            @Override
+//                                            public void onSuccess(RegistrationResponse registrationResponse) {
+//
+//                                            }
+//
+//                                            @Override
+//                                            public void onFailure(RegistrationResponse registrationResponse, Exception exception) {
+//
+//                                            }
+//                                        };
+//                                        PushNotificationTask pushNotificationTask = new PushNotificationTask(Applozic.getInstance(context).getDeviceRegistrationId(),pushNotificationTaskListener,context);
+//                                        pushNotificationTask.execute((Void)null);
+//                                    }
+//
+//                                    @Override
+//                                    public void onFailure(RegistrationResponse registrationResponse, Exception exception) {
+//
+//                                    }
+//                                };
+//                                User user = new User();
+//                                user.setUserId(id);
+//                                user.setDisplayName(SuserName);
+//                                user.setAuthenticationTypeId(User.AuthenticationType.APPLOZIC.getValue());
+//                                List<String> featureList =  new ArrayList<>();
+//                                featureList.add(User.Features.IP_AUDIO_CALL.getValue());// FOR AUDIO
+//                                featureList.add(User.Features.IP_VIDEO_CALL.getValue());// FOR VIDEO
+//                                user.setFeatures(featureList);
+//
+//                                mAuthTask = new UserLoginTask(user, listener, RegistrationActivity.this);
+//                                mAuthTask.execute((Void) null);
+//                                savePref(Constants.GENDER,gender);
+//                                savePref(Constants.USER_ID,id);
+//                                savePref(Constants.PASSWORD,Spass);
+//                                savePref(Constants.FBREGISTRATION,false);
+//                                savePref(Constants.EMAIL_REGISTRATION,true);
+                                savePref(Constants.TAG_ISLOGGED_IN,true);
+                                savePref(Constants.ILIKE,iLike);
+//                                Intent intent=new Intent(LoginAct.this,HomeActivity.class);
+//                                startActivity(intent);
                                 savePref(Constants.USER_ID, id);
+                                savePref(Constants.USERNAME,SuserName);
                                 userID = id;
                                 savePref(Constants.GENDER, gender);
                                 if (fbid.isEmpty()) {
@@ -1558,6 +1781,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                                 } else {
                                     savePref(Constants.EMAIL_REGISTRATION, false);
                                     savePref(Constants.FBREGISTRATION, true);
+                                    savePref(Constants.PASSWORD,Spassword);
                                 }
                                 try{
                                     if (f.length() != 0) {
@@ -1602,8 +1826,11 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                             int value = register.getResult().getValue();
                             if (value == 1) {
 //                                showToast(msg);
+                                savePref(Constants.ILIKE,iLike);
                                 savePref(Constants.USER_ID, id);
+                                savePref(Constants.USERNAME,SuserName);
                                 userID = id;
+                                savePref(Constants.TAG_ISLOGGED_IN,true);
                                 savePref(Constants.GENDER, gender);
                                 if (fbid.isEmpty()) {
                                     savePref(Constants.EMAIL_REGISTRATION, true);
@@ -1679,7 +1906,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         try {
-            Uri mImageCaptureUri = null;
+
             String state = Environment.getExternalStorageState();
             if (Environment.MEDIA_MOUNTED.equals(state)) {
                 mImageCaptureUri = Uri.fromFile(mFileTemp);
@@ -1701,16 +1928,17 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
         photoPickerIntent.setType("image/*");
         startActivityForResult(photoPickerIntent, REQUEST_CODE_GALLERY);
     }
-    private void startCropImage() {
+    private void startCropImage(Uri uri) {
+        com.theartofdev.edmodo.cropper.CropImage.activity(uri).setGuidelines(CropImageView.Guidelines.ON).start(this);
 
-        Intent intent = new Intent(RegistrationActivity.this, CropImage.class);
-        intent.putExtra(CropImage.IMAGE_PATH, mFileTemp.getPath());
-        intent.putExtra(CropImage.SCALE, true);
-
-        intent.putExtra(CropImage.ASPECT_X, 5);
-        intent.putExtra(CropImage.ASPECT_Y, 5);
-
-        startActivityForResult(intent, REQUEST_CODE_CROP_IMAGE);
+//        Intent intent = new Intent(RegistrationActivity.this, CropImage.class);
+//        intent.putExtra(CropImage.IMAGE_PATH, mFileTemp.getPath());
+//        intent.putExtra(CropImage.SCALE, true);
+//
+//        intent.putExtra(CropImage.ASPECT_X, 5);
+//        intent.putExtra(CropImage.ASPECT_Y, 5);
+//
+//        startActivityForResult(intent, REQUEST_CODE_CROP_IMAGE);
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -1721,6 +1949,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                 if (resultCode == Activity.RESULT_OK) {
                     try {
                         imagedata=true;
+                        Uri uri=data.getData();
 
                         InputStream inputStream = getContentResolver().openInputStream(data.getData());
                         FileOutputStream fileOutputStream = new FileOutputStream(mFileTemp);
@@ -1728,7 +1957,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                         fileOutputStream.close();
                         inputStream.close();
 
-                        startCropImage();
+                        startCropImage(uri);
 
                     } catch (Exception e) {
 
@@ -1739,33 +1968,73 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
 
                 if (resultCode == Activity.RESULT_OK) {
                     imagedata=true;
-                    startCropImage();
+                   startCropImage(mImageCaptureUri);
                 }
                 break;
             // ACTION_TAKE_PHOTO_S
-            case REQUEST_CODE_CROP_IMAGE :
-                if (resultCode == Activity.RESULT_OK) {
-
-                    String path = data.getStringExtra(CropImage.IMAGE_PATH);
-                    if (path == null) {
-
+            case  CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
+                CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                if (resultCode == RESULT_OK) {
+                    final Uri resultUri = result.getUri();
+                    final String path=resultUri.getPath();
+                    if (path==null)
+                    {
                         return;
                     }
+                    isphoto=true;
 
-                    final Bitmap photo = BitmapFactory.decodeFile(mFileTemp.getPath());
+                    final Bitmap photo=BitmapFactory.decodeFile(path);
+
+                    ExifInterface ei = null;
                     try {
-                        bimapTofile(photo);
-                    } catch (IOException e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
+                        ei = new ExifInterface(path);
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
+                    int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                            ExifInterface.ORIENTATION_UNDEFINED);
+
+                    switch(orientation) {
+
+                        case ExifInterface.ORIENTATION_ROTATE_90:
+                            rotateImage(photo, 90);
+                            break;
+
+                        case ExifInterface.ORIENTATION_ROTATE_180:
+                            rotateImage(photo, 180);
+                            break;
+
+                        case ExifInterface.ORIENTATION_ROTATE_270:
+                            rotateImage(photo, 270);
+                            break;
+
+                        case ExifInterface.ORIENTATION_NORMAL:
+
+                        default:
+                            break;
+                    }
+
+                        userpic.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    bimapTofile(photo);
+                                }catch (IOException e){e.printStackTrace();}
+                            }
+                        });
+
+
+
                     picedit.post(new Runnable() {
 
                         @Override
                         public void run() {
                             try {
-
-                                userpic.setImageBitmap(photo);
+                                Bitmap photo=BitmapFactory.decodeFile(path);
+//                                userpic.setImageBitmap(photo);
+                                Picasso.with(RegistrationActivity.this).load(resultUri).transform(new CircleTransform()).into(userpic);
+//                                Picasso.with(getApplicationContext()).load(new File(mFileTemp.getAbsolutePath())).placeholder(R.drawable.cmra).into(userpic);
+//                                userpic.setImageBitmap(photo);
 
 //                                img_cover_pic.setImageBitmap(photo);
                                 AlphaAnimation alpha = new AlphaAnimation(0.3F, 0.3F);
@@ -1778,7 +2047,47 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                             }
                         }
                     });
+
+                } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                    Exception error = result.getError();
                 }
+                break;
+            case REQUEST_CODE_CROP_IMAGE :
+//                if (resultCode == Activity.RESULT_OK) {
+//
+//                    String path = data.getStringExtra(CropImage.IMAGE_PATH);
+//                    if (path == null) {
+//
+//                        return;
+//                    }
+//
+//                    final Bitmap photo = BitmapFactory.decodeFile(mFileTemp.getPath());
+//                    try {
+//                        bimapTofile(photo);
+//                    } catch (IOException e1) {
+//                        // TODO Auto-generated catch block
+//                        e1.printStackTrace();
+//                    }
+//                    picedit.post(new Runnable() {
+//
+//                        @Override
+//                        public void run() {
+//                            try {
+//
+//                                userpic.setImageBitmap(photo);
+//
+////                                img_cover_pic.setImageBitmap(photo);
+//                                AlphaAnimation alpha = new AlphaAnimation(0.3F, 0.3F);
+//                                alpha.setDuration(0); // Make animation instant
+//                                alpha.setFillAfter(true); // Tell it to persist after the animation ends
+////                                img_cover_pic.startAnimation(alpha);
+//
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    });
+//                }
                 break;
             case IMAGE_EDIT:
                 if (resultCode==Activity.RESULT_OK)
@@ -1793,6 +2102,40 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
                         if (camera)
                         {
                             takePicture();
+                        }
+
+                    }catch (Exception e)
+                    {
+
+                    }
+                }
+                break;
+            case EDITWEIGHT:
+                if (resultCode==Activity.RESULT_OK)
+                {
+                    try
+                    {
+                        String name=data.getStringExtra("name");
+                        if (!name.isEmpty())
+                        {
+                            editweight.setText(name);
+                        }
+
+                    }catch (Exception e)
+                    {
+
+                    }
+                }
+                break;
+            case EDITHEIGHT:
+                if (resultCode==Activity.RESULT_OK)
+                {
+                    try
+                    {
+                        String name=data.getStringExtra("name");
+                        if (!name.isEmpty())
+                        {
+                            editheight.setText(name);
                         }
 
                     }catch (Exception e)
@@ -1858,6 +2201,12 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
             output.write(buffer, 0, bytesRead);
         }
     }
+    public static Bitmap rotateImage(Bitmap source, float angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
+                matrix, true);
+    }
     public void bimapTofile(Bitmap bitmap) throws IOException{
 
         //create a file to write bitmap data
@@ -1867,7 +2216,8 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
 
         //Convert bitmap to byte array
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
+//        bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
+        bitmap.compress(Bitmap.CompressFormat.JPEG,40,bos);
         byte[] bitmapdata = bos.toByteArray();
 
 
@@ -1878,7 +2228,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
 
         fos.flush();
         fos.close();
-
+//        Picasso.with(getApplicationContext()).load(new File(mFileTemp.getAbsolutePath())).placeholder(R.drawable.cmra).into(userpic);
 
 
     }
@@ -1977,6 +2327,7 @@ public class RegistrationActivity extends BaseActivity implements LocationListen
     @Override
     public void onLocationChanged(Location location) {
         lat = location.getLatitude();
+
         lng = location.getLongitude();
     }
 

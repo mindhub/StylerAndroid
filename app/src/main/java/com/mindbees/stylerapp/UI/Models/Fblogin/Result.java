@@ -19,6 +19,9 @@ public class Result implements Serializable{
     @SerializedName("user_id")
     @Expose
     private String userId;
+    @SerializedName("userInfo")
+    @Expose
+    private UserInfo userInfo;
 
     public Integer getValue() {
         return value;
@@ -42,6 +45,14 @@ public class Result implements Serializable{
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public UserInfo getUserInfo() {
+        return userInfo;
+    }
+
+    public void setUserInfo(UserInfo userInfo) {
+        this.userInfo = userInfo;
     }
 
 }

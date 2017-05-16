@@ -18,4 +18,13 @@ public class Urls {
     public static final String LOGIN_URL="v1/login";
     public static final String FBREGISTRATION="v1/fbregister";
     public static final String FORGOT_PASSWORD="v1/forgotPassword";
+    public static final String GET_NEW_STYLERS="v1/getNewStylers";
+    public static final String SEARCHPROFILES="v1/searchProfiles";
+    public static final String PROFILE="v1/profile";
+    public static final String FILE_UPLOAD_MULTIPLE="upload_gallery.php";
+    public static final String GALLERY="v1/imageGallery";
+    public static final String BLOCK="v1/toggleBlock";
+    public static final String GETSTYLERDETAIL="v1/GetStylerDetail";
+    public static final String TOGGLEFAVOURITES="v1/toggleFavorites";
+    public static final String MYFAVORITES="v1/GetMyFavourites";
 }

@@ -4,11 +4,18 @@ package com.mindbees.stylerapp.UTILS.Retrofit;
 
 
 
+import com.mindbees.stylerapp.UI.Models.Block.ModelBlocked;
 import com.mindbees.stylerapp.UI.Models.Ethnicity.ModelEthnicity;
 import com.mindbees.stylerapp.UI.Models.Fblogin.ModelFblogin;
+import com.mindbees.stylerapp.UI.Models.Gallery.ModelGallery;
 import com.mindbees.stylerapp.UI.Models.Login.ModelLogin;
 import com.mindbees.stylerapp.UI.Models.ModelForgotpassword.Modelforgot;
+import com.mindbees.stylerapp.UI.Models.Myfavorites.ModelMyfavorite;
+import com.mindbees.stylerapp.UI.Models.NewStylers.ModelnewStylers;
+import com.mindbees.stylerapp.UI.Models.Profile.ModelProfile;
 import com.mindbees.stylerapp.UI.Models.Register.ModelRegister;
+import com.mindbees.stylerapp.UI.Models.StylerDetail.ModelStylerDetail;
+import com.mindbees.stylerapp.UI.Models.StylerSearch.ModelStylerSearch;
 import com.mindbees.stylerapp.UI.Models.Tribes.ModelTribes;
 import com.mindbees.stylerapp.UI.Models.update_profile.ModelUpdateProfile;
 import com.mindbees.stylerapp.UTILS.Urls;
@@ -58,6 +65,9 @@ public interface APIService {
     @Multipart
     @POST(Urls.FILE_UPLOAD)
     Call<ResponseBody>postImage(@Part MultipartBody.Part image, @Part("user_id")RequestBody userid);
+    @Multipart
+    @POST(Urls.FILE_UPLOAD_MULTIPLE)
+    Call<ResponseBody>postmultiple(@Part MultipartBody.Part image,@Part("user_id")RequestBody userid);
     @Headers("Oakey:stylapp@XYZ")
     @FormUrlEncoded
     @POST(Urls.UPDATE_PROFILE)
@@ -70,4 +80,37 @@ public interface APIService {
     @FormUrlEncoded
     @POST(Urls.FORGOT_PASSWORD)
     Call<Modelforgot>forgotpass(@FieldMap HashMap<String,String>params);
+    @Headers("Oakey:stylapp@XYZ")
+    @FormUrlEncoded
+    @POST(Urls.GET_NEW_STYLERS)
+    Call<ModelnewStylers>getnewstylers(@FieldMap HashMap<String,String>params);
+    @Headers("Oakey:stylapp@XYZ")
+    @FormUrlEncoded
+    @POST(Urls.SEARCHPROFILES)
+    Call<ModelStylerSearch>getsearch(@FieldMap HashMap<String,String>params);
+    @Headers("Oakey:stylapp@XYZ")
+    @FormUrlEncoded
+    @POST(Urls.PROFILE)
+    Call<ModelProfile>getprofile(@FieldMap HashMap<String,String>params);
+    @Headers("Oakey:stylapp@XYZ")
+    @FormUrlEncoded
+    @POST(Urls.GALLERY)
+    Call<ModelGallery>getgallery(@FieldMap HashMap<String,String>params);
+    @Headers("Oakey:stylapp@XYZ")
+    @FormUrlEncoded
+    @POST(Urls.BLOCK)
+    Call<ModelBlocked>getblocked(@FieldMap HashMap<String,String>params);
+    @Headers("Oakey:stylapp@XYZ")
+    @FormUrlEncoded
+    @POST(Urls.GETSTYLERDETAIL)
+    Call<ModelStylerDetail>getstylerdetail(@FieldMap HashMap<String,String>params);
+    @Headers("Oakey:stylapp@XYZ")
+    @FormUrlEncoded
+    @POST(Urls.TOGGLEFAVOURITES)
+    Call<ModelBlocked>gettogglefavorite(@FieldMap HashMap<String,String>params);
+    @Headers("Oakey:stylapp@XYZ")
+    @FormUrlEncoded
+    @POST(Urls.MYFAVORITES)
+    Call<ModelMyfavorite>getmyfavorite(@FieldMap HashMap<String,String>params);
+
 }

@@ -16,7 +16,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.mindbees.stylerapp.R;
 import com.mindbees.stylerapp.UI.Base.BaseActivity;
 import com.mindbees.stylerapp.UI.Models.ImagegridModel;
@@ -35,6 +38,7 @@ public class GridRecycleAdapter extends RecyclerView.Adapter<GridRecycleAdapter.
     int width,height;
     ProgressDialog pDialog;
 
+
     public ArrayList<ImagegridModel>imagegridModels;
     public GridRecycleAdapter(Context context,ArrayList<ImagegridModel>imagegridModels)
     {
@@ -46,6 +50,7 @@ public class GridRecycleAdapter extends RecyclerView.Adapter<GridRecycleAdapter.
                 .getMetrics(displayMetrics);
          height = displayMetrics.heightPixels;
          width = displayMetrics.widthPixels;
+        showProgress();
     }
     public ImagegridModel getObject(int position)
     {
@@ -54,6 +59,7 @@ public class GridRecycleAdapter extends RecyclerView.Adapter<GridRecycleAdapter.
     @Override
     public GridRecycleAdapter.VIEWHOLDER onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.image_row, parent, false);
+        showProgress();
         return new VIEWHOLDER(itemView);
 
     }
@@ -63,6 +69,7 @@ public class GridRecycleAdapter extends RecyclerView.Adapter<GridRecycleAdapter.
 
         if (imagegridModels.get(position).getTribeImage().isEmpty())
         {
+            hideProgress();
             Picasso.with(context).load(R.drawable.logo).placeholder(R.drawable.logo).into(holder.tribe_image);
             holder.otherlayout.setBackground(context.getResources().getDrawable(R.drawable.rectangle_3));
             holder.tribe_selected.setVisibility(View.VISIBLE);
@@ -70,8 +77,28 @@ public class GridRecycleAdapter extends RecyclerView.Adapter<GridRecycleAdapter.
 
         }
         else {
+//            hideProgress();
+            if (position == (imagegridModels.size()-1 )) {
+                hideProgress();
+//                Toast.makeText(context,"Toast",Toast.LENGTH_LONG).show();
+                Picasso.with(context)
+                        .load(imagegridModels.get(position).getTribeImage())
+                        .into(holder.tribe_image, new com.squareup.picasso.Callback() {
+                            @Override
+                            public void onSuccess() {
 
-            Picasso.with(context).load(imagegridModels.get(position).getTribeImage()).placeholder(R.drawable.logo).into(holder.tribe_image);
+
+                            }
+
+                            @Override
+                            public void onError() {
+
+                            }
+                        });
+            } else {
+
+
+                Picasso.with(context).load(imagegridModels.get(position).getTribeImage()).placeholder(R.drawable.logo).into(holder.tribe_image);
 //            Picasso.with(context).load(imagegridModels.get(position).getTribeImage()).into(new Target() {
 //                @Override
 //                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -90,27 +117,26 @@ public class GridRecycleAdapter extends RecyclerView.Adapter<GridRecycleAdapter.
 //
 //                }
 //            });
-            holder.otherlayout.setBackground(context.getResources().getDrawable(R.drawable.rectangle_2));
-            if (imagegridModels.get(position).isSelected())
-            {
-                holder.tribe_selected.setVisibility(View.VISIBLE);
-                holder.tribe_selected.setBackgroundColor(context.getResources().getColor(R.color.grey_white));
             }
-            else {
-                holder.tribe_selected.setVisibility(View.GONE);
+                holder.otherlayout.setBackground(context.getResources().getDrawable(R.drawable.rectangle_2));
+                if (imagegridModels.get(position).isSelected()) {
+                    holder.tribe_selected.setVisibility(View.VISIBLE);
+                    holder.tribe_selected.setBackgroundColor(context.getResources().getColor(R.color.grey_white));
+                } else {
+                    holder.tribe_selected.setVisibility(View.GONE);
+                }
+
             }
 
-        }
+            holder.tribe_name.setText(imagegridModels.get(position).getTribeName());
+            int h = height / 6;
+            ViewGroup.LayoutParams params = holder.imagelayout.getLayoutParams();
+            params.height = h;
+            holder.imagelayout.setLayoutParams(params);
 
-        holder.tribe_name.setText(imagegridModels.get(position).getTribeName());
-        int h=height/6;
-        ViewGroup.LayoutParams params = holder.imagelayout.getLayoutParams();
-        params.height=h;
-        holder.imagelayout.setLayoutParams(params);
-
-        Typeface typeface=Typeface.createFromAsset(context.getAssets(),"fonts/brandon_grotesque_bold.ttf");
-        Typeface typeface1=Typeface.createFromAsset(context.getAssets(),"fonts/BrandonGrotesque-Regular.ttf");
-        holder.tribe_name.setTypeface(typeface1);
+            Typeface typeface = Typeface.createFromAsset(context.getAssets(), "fonts/brandon_grotesque_bold.ttf");
+            Typeface typeface1 = Typeface.createFromAsset(context.getAssets(), "fonts/BrandonGrotesque-Regular.ttf");
+            holder.tribe_name.setTypeface(typeface1);
 
 
     }

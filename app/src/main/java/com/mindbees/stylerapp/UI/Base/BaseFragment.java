@@ -8,11 +8,16 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
+import com.mindbees.stylerapp.R;
+import com.mindbees.stylerapp.UTILS.CustomProgressDialog;
 import com.mindbees.stylerapp.UTILS.Util;
 
 
@@ -21,7 +26,7 @@ import com.mindbees.stylerapp.UTILS.Util;
  */
 public class BaseFragment extends Fragment {
     ProgressDialog pDialog;
-
+    private String TAG_LOG = "STYLER";
 
     @Override
     public void onAttach(Context context) {
@@ -42,7 +47,7 @@ public class BaseFragment extends Fragment {
 
     private ProgressDialog getProgressDialog() {
         if (this.pDialog == null) {
-//            this.pDialog = CustomProgressDialog.nowRunningDialog(getActivity());
+           this.pDialog = CustomProgressDialog.nowRunningDialog(getContext());
         }
         return this.pDialog;
     }
@@ -72,21 +77,57 @@ public class BaseFragment extends Fragment {
         TextView textView = (TextView) view.findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(Color.WHITE);
         if (isSuccess){
-            view.setBackgroundColor(Color.GREEN);
+            view.setBackgroundColor(getResources().getColor(R.color.green_button));
         }else {
-            view.setBackgroundColor(Color.RED);
+            view.setBackgroundColor(getResources().getColor(R.color.dark_slate_blue));
         }
 
         snackbar.show();
 
 //        Snackbar.make(context.findViewById(android.R.id.content), msg, Snackbar.LENGTH_SHORT).show();
     }
-
-    public void showLog(String msg){
-
-
+    public void showToast(String Toast,boolean error){
+        Util.getUtils().showToastMessage(Toast,error);
     }
+    public void showLog(String msg, int color){
+        if (color == 0){
+            Log.v(TAG_LOG, msg);
+        }else if(color == 1){
+            Log.e(TAG_LOG, msg);
+        }else if(color == 2){
+            Log.i(TAG_LOG, msg);
+        }else if(color == 3){
+            Log.d(TAG_LOG, msg);
+        }
+    }
+    public void setupUI(View view) {
 
+        //Set up touch listener for non-text box views to hide keyboard.
+        if(!(view instanceof EditText)) {
+
+            view.setOnTouchListener(new View.OnTouchListener() {
+
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    // TODO Auto-generated method stub
+                    Util.hideSoftKeyboard(getActivity());
+                    return false;
+                }
+
+            });
+        }
+
+        //If a layout container, iterate over children and seed recursion.
+        if (view instanceof ViewGroup) {
+
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+
+                View innerView = ((ViewGroup) view).getChildAt(i);
+
+                setupUI(innerView);
+            }
+        }
+    }
     public boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);

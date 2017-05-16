@@ -12,59 +12,26 @@ import java.util.List;
 
 public class Result implements Serializable{
 
-    @SerializedName("tribe_id")
+    @SerializedName("male")
     @Expose
-    private String tribeId;
-    @SerializedName("gender")
+    private List<Male> male = null;
+    @SerializedName("female")
     @Expose
-    private String gender;
-    @SerializedName("tribe_title")
-    @Expose
-    private String tribeTitle;
-    @SerializedName("tribe_img")
-    @Expose
-    private String tribeImg;
-    @SerializedName("tribe_status")
-    @Expose
-    private String tribeStatus;
+    private List<Female> female = null;
 
-    public String getTribeId() {
-        return tribeId;
+    public List<Male> getMale() {
+        return male;
     }
 
-    public void setTribeId(String tribeId) {
-        this.tribeId = tribeId;
+    public void setMale(List<Male> male) {
+        this.male = male;
     }
 
-    public String getGender() {
-        return gender;
+    public List<Female> getFemale() {
+        return female;
     }
 
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-
-    public String getTribeTitle() {
-        return tribeTitle;
-    }
-
-    public void setTribeTitle(String tribeTitle) {
-        this.tribeTitle = tribeTitle;
-    }
-
-    public String getTribeImg() {
-        return tribeImg;
-    }
-
-    public void setTribeImg(String tribeImg) {
-        this.tribeImg = tribeImg;
-    }
-
-    public String getTribeStatus() {
-        return tribeStatus;
-    }
-
-    public void setTribeStatus(String tribeStatus) {
-        this.tribeStatus = tribeStatus;
+    public void setFemale(List<Female> female) {
+        this.female = female;
     }
 }

@@ -8,8 +8,17 @@ import java.io.Serializable;
 
 public class ImagegridModel implements Serializable {
     String tribeName;
+    String userid;
     String tribeImage;
     boolean Selected;
+
+    public void setUserid(String userid) {
+        this.userid = userid;
+    }
+
+    public String getUserid() {
+        return userid;
+    }
 
     public String getTribeImage() {
         return tribeImage;

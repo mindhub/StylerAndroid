@@ -9,8 +9,14 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/audiovideo" />
             <option value="$PROJECT_DIR$/library" />
+            <option value="$PROJECT_DIR$/mobicomkit" />
+            <option value="$PROJECT_DIR$/mobicomkitui" />
+            <option value="$PROJECT_DIR$/mobicommons" />
+            <option value="$PROJECT_DIR$/multipleimageselect" />
             <option value="$PROJECT_DIR$/simple-crop-image-lib" />
+            <option value="$PROJECT_DIR$/viewpagerlibrary" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

@@ -13,13 +13,13 @@ import java.util.List;
 public class ModelTribes implements Serializable {
     @SerializedName("result")
     @Expose
-    private List<Result> result = null;
+    private Result result;
 
-    public List<Result> getResult() {
+    public Result getResult() {
         return result;
     }
 
-    public void setResult(List<Result> result) {
+    public void setResult(Result result) {
         this.result = result;
     }
 }

@@ -34,11 +34,13 @@ public class BaseActivity extends AppCompatActivity {
     ProgressDialog pDialog;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
     }
+
     private ProgressDialog getProgressDialog() {
         if (this.pDialog == null) {
             this.pDialog = CustomProgressDialog.nowRunningDialog(this);
@@ -100,7 +102,7 @@ public class BaseActivity extends AppCompatActivity {
         if (isSuccess){
             view.setBackgroundColor(getResources().getColor(R.color.green_button));
         }else {
-            view.setBackgroundColor(getResources().getColor(R.color.dark_slate_blue));
+            view.setBackgroundColor(getResources().getColor(R.color.dark_gray));
         }
 
         snackbar.show();

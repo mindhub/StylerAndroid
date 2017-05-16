@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-
+android:id="@+id/registrationlayout_2"
     android:layout_height="match_parent">
     <RelativeLayout
         android:layout_width="match_parent"
@@ -91,25 +91,34 @@
                         android:orientation="vertical"
                         android:weightSum="7"
                         android:layout_height="match_parent">
+                        <!--<ScrollView-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_weight="1"-->
+                            <!--android:id="@+id/scrollView"-->
+                            <!--android:layout_height="match_parent">-->
+                            <android.support.v7.widget.RecyclerView
+                                android:layout_width="match_parent"
+                                android:layout_weight="1"
+
+                                android:layout_marginLeft="5dp"
+                                android:layout_marginRight="5dp"
+                                android:layout_marginTop="5dp"
+                                android:id="@+id/recyclerView"
+
+                                android:layout_height="match_parent">
+
+                            </android.support.v7.widget.RecyclerView>
+                        <!--</ScrollView>-->
 
 
 
-                    <android.support.v7.widget.RecyclerView
-                        android:layout_width="match_parent"
-                        android:layout_weight="1"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="5dp"
-                        android:layout_marginTop="5dp"
-                        android:id="@+id/recyclerView"
 
-                        android:layout_height="match_parent">
-
-                    </android.support.v7.widget.RecyclerView>
 
                         <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_below="@+id/recyclerView"
                         android:weightSum="3"
+                            android:id="@+id/linearOtherlayout"
 
                         android:layout_weight="6"
                         android:orientation="horizontal"
@@ -195,11 +204,13 @@
                         android:layout_margin="5dp"
                       android:visibility="gone"
                         android:id="@+id/enlarged_layout"
-                        android:background="@color/grey_white"
+                        android:background="@color/white"
                         android:layout_height="match_parent">
                         <ImageView
                             android:layout_width="match_parent"
-                            android:scaleType="fitXY"
+                            android:layout_marginBottom="20dp"
+                            android:layout_marginTop="10dp"
+
                             android:id="@+id/image_enlarged"
                             android:layout_height="match_parent" />
                         <RelativeLayout

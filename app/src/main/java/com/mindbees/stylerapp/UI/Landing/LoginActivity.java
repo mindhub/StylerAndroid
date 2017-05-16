@@ -1,8 +1,8 @@
 package com.mindbees.stylerapp.UI.Landing;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -15,16 +15,28 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.applozic.audiovideo.activity.AudioCallActivityV2;
+import com.applozic.audiovideo.activity.VideoActivity;
+import com.applozic.mobicomkit.Applozic;
+import com.applozic.mobicomkit.ApplozicClient;
+import com.applozic.mobicomkit.api.account.register.RegistrationResponse;
+import com.applozic.mobicomkit.api.account.user.PushNotificationTask;
+import com.applozic.mobicomkit.api.account.user.User;
+import com.applozic.mobicomkit.api.account.user.UserLoginTask;
+import com.applozic.mobicomkit.uiwidgets.ApplozicSetting;
 import com.mindbees.stylerapp.R;
 import com.mindbees.stylerapp.UI.Base.BaseActivity;
 import com.mindbees.stylerapp.UI.HOME.HomeActivity;
 import com.mindbees.stylerapp.UI.Models.Login.ModelLogin;
+import com.mindbees.stylerapp.UI.POPUPS.PopUpForgotPassword;
 import com.mindbees.stylerapp.UTILS.Constants;
 import com.mindbees.stylerapp.UTILS.Retrofit.APIService;
 import com.mindbees.stylerapp.UTILS.Retrofit.ServiceGenerator;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-
+import java.util.List;
+import java.util.Map;
 
 
 import retrofit2.Call;
@@ -39,6 +51,7 @@ import retrofit2.Response;
 public class LoginActivity extends BaseActivity {
     EditText Email,Password;
     LinearLayout Login;
+    private UserLoginTask mAuthTask = null;
     private AlertDialog progressDialog;
     String Semail,Spass;
     MaterialDialog builder;
@@ -134,7 +147,58 @@ public class LoginActivity extends BaseActivity {
                         if (status.equals("1"))
                         {
                             String userid=modelLogin.getResult().get(0).getUserId();
+                            String username=modelLogin.getResult().get(0).getUsername();
+                            String gender=modelLogin.getResult().get(0).getGender();
+//                            UserLoginTask.TaskListener listener=new UserLoginTask.TaskListener() {
+//                                @Override
+//                                public void onSuccess(RegistrationResponse registrationResponse, Context context) {
+//
+//                                    ApplozicClient.getInstance(context).setContextBasedChat(true).setHandleDial(true).setIPCallEnabled(true);
+//                                    Map<ApplozicSetting.RequestCode, String> activityCallbacks = new HashMap<ApplozicSetting.RequestCode, String>();
+//                                    activityCallbacks.put(ApplozicSetting.RequestCode.AUDIO_CALL, AudioCallActivityV2.class.getName());
+//                                    activityCallbacks.put(ApplozicSetting.RequestCode.VIDEO_CALL, VideoActivity.class.getName());
+//                                    ApplozicSetting.getInstance(context).setActivityCallbacks(activityCallbacks);
+////                                    ApplozicSetting.getInstance(context).setChatBackgroundColorOrDrawableResource(R.drawable.bg_splash);
+////                                    ApplozicSetting.getInstance(context).setSentMessageBackgroundColor(R.color.white);
+////                                    ApplozicSetting.getInstance(context).setReceivedMessageBackgroundColor(R.color.sentmessage_black);
+////                                    ApplozicSetting.getInstance(context).setSentMessageTextColor(R.color.black);
+////                                    ApplozicSetting.getInstance(context).setReceivedMessageTextColor(R.color.white);
+//                                    PushNotificationTask.TaskListener pushNotificationTaskListener=  new PushNotificationTask.TaskListener() {
+//                                        @Override
+//                                        public void onSuccess(RegistrationResponse registrationResponse) {
+//
+//                                        }
+//
+//                                        @Override
+//                                        public void onFailure(RegistrationResponse registrationResponse, Exception exception) {
+//
+//                                        }
+//                                    };
+//                                    PushNotificationTask pushNotificationTask = new PushNotificationTask(Applozic.getInstance(context).getDeviceRegistrationId(),pushNotificationTaskListener,context);
+//                                    pushNotificationTask.execute((Void)null);
+//                                }
+//
+//                                @Override
+//                                public void onFailure(RegistrationResponse registrationResponse, Exception exception) {
+//
+//                                }
+//                            };
+//                            User user = new User();
+//                            user.setUserId(userid);
+//                            user.setDisplayName(username);
+//                            user.setAuthenticationTypeId(User.AuthenticationType.APPLOZIC.getValue());
+//                            List<String> featureList =  new ArrayList<>();
+//                            featureList.add(User.Features.IP_AUDIO_CALL.getValue());// FOR AUDIO
+//                            featureList.add(User.Features.IP_VIDEO_CALL.getValue());// FOR VIDEO
+//                            user.setFeatures(featureList);
+//                            mAuthTask = new UserLoginTask(user, listener, LoginActivity.this);
+//                            mAuthTask.execute((Void) null);
+                            savePref(Constants.GENDER,gender);
+                            savePref(Constants.USERNAME,username);
                             savePref(Constants.USER_ID,userid);
+                            savePref(Constants.PASSWORD,Spass);
+                            savePref(Constants.FBREGISTRATION,false);
+                            savePref(Constants.EMAIL_REGISTRATION,true);
                             savePref(Constants.TAG_ISLOGGED_IN,true);
                             Intent intent=new Intent(LoginActivity.this,HomeActivity.class);
                             startActivity(intent);

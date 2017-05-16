@@ -37,8 +37,8 @@
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_marginTop="10dp"
-    android:layout_marginLeft="25dp"
-    android:layout_marginRight="25dp"
+    android:layout_marginLeft="20dp"
+    android:layout_marginRight="20dp"
     android:layout_height="match_parent"
     >
 
@@ -89,11 +89,11 @@
                         android:layout_marginTop="1dp"
                         android:layout_marginBottom="1dp"
 
-                        android:layout_height="40dp">
+                        android:layout_height="30dp">
                         <TextView
                             android:layout_width="match_parent"
                             android:gravity="center"
-                            android:padding="10dp"
+
                             android:textStyle="bold"
 
                             android:textAllCaps="true"
@@ -116,11 +116,11 @@
 
                         android:id="@+id/layout_male"
                         android:background="@color/white"
-                        android:layout_height="40dp">
+                        android:layout_height="30dp">
                         <TextView
                             android:layout_width="match_parent"
                             android:gravity="center"
-                            android:padding="10dp"
+
                             android:textStyle="bold"
 
 
@@ -171,7 +171,7 @@
                         android:layout_marginBottom="1dp"
                         android:id="@+id/layout_like_female"
                         android:background="@color/white"
-                        android:layout_height="40dp">
+                        android:layout_height="30dp">
                         <TextView
                             android:layout_width="match_parent"
                             android:gravity="center"
@@ -196,7 +196,7 @@
                         android:layout_marginBottom="1dp"
                         android:id="@+id/layout_like_male"
                         android:background="@color/white"
-                        android:layout_height="40dp">
+                        android:layout_height="30dp">
                         <TextView
                             android:layout_width="match_parent"
                             android:gravity="center"
@@ -222,7 +222,7 @@
                         android:layout_marginTop="1dp"
                         android:id="@+id/layout_like_both"
                         android:background="@color/white"
-                        android:layout_height="40dp">
+                        android:layout_height="30dp">
                         <TextView
                             android:layout_width="match_parent"
                             android:gravity="center"
@@ -370,10 +370,12 @@
                     <EditText
                         android:layout_width="match_parent"
                         android:id="@+id/editTextusername"
-                        android:inputType="textPersonName"
+
                         android:hint="User name:"
                         android:paddingLeft="10dp"
                         android:paddingTop="5dp"
+
+                        android:inputType="textPersonName"
                         android:maxLines="1"
                         android:paddingRight="5dp"
                         android:paddingBottom="5dp"
@@ -511,6 +513,7 @@
                         android:paddingTop="5dp"
                         android:paddingRight="5dp"
                         android:paddingBottom="5dp"
+                        android:imeOptions="actionDone"
                         android:maxLines="1"
                         android:textColorHint="@color/black"
                         android:layout_height="50dp"
@@ -721,8 +724,9 @@
 
                             android:id="@+id/editTextHeight"
                             android:inputType="number"
+                            android:paddingLeft="10dp"
                             android:textColor="@color/black"
-                            android:layout_marginRight="5dp"
+                            android:layout_marginRight="2dp"
                             android:hint="@string/height_hint"
                             android:textColorHint="@color/black"
 
@@ -761,9 +765,10 @@
                         android:layout_height="match_parent">
                     <EditText
                         android:layout_width="match_parent"
-                        android:layout_marginLeft="5dp"
+                        android:layout_marginLeft="2dp"
                         android:hint="@string/weight_hint"
                         android:inputType="number"
+                        android:paddingLeft="10dp"
 
                         android:id="@+id/editTextWeight"
                         android:textColor="@color/black"
@@ -811,7 +816,7 @@
                         android:id="@+id/editTextehnic"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:hint="Ethinicity (optional):"
+                        android:hint="Ethnicity (optional):"
                         android:padding="5dp"
                         android:textColorHint="@color/black"
                         android:inputType="textPersonName"
@@ -901,21 +906,22 @@
                                 android:layout_gravity="center"
                                 android:layout_marginLeft="5dp"
                                 android:orientation="vertical"
-                                android:layout_height="wrap_content">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:textColor="@color/black"
-                                    android:text="I accept terms of use and"
-                                    android:layout_height="wrap_content" />
+                                android:layout_height="match_parent">
+                                <!--<TextView-->
+                                    <!--android:layout_width="wrap_content"-->
+                                    <!--android:textColor="@color/black"-->
+                                    <!--android:text="I accept terms of use and"-->
+                                    <!--android:layout_height="wrap_content" />-->
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_marginLeft="5dp"
+                                    android:gravity="center_vertical"
 
                                     android:text="@string/privacypolicy"
                                     android:id="@+id/textprivacypolicy"
                                     android:textColor="@color/black"
 
-                                    android:layout_height="wrap_content" />
+                                    android:layout_height="match_parent" />
                             </LinearLayout>
                         </LinearLayout>
 
@@ -948,9 +954,9 @@
         android:layout_width="match_parent"
 
         android:layout_height="150dp">
-        <com.mindbees.stylerapp.UTILS.RoundedImageView
+        <ImageView
             android:layout_width="100dp"
-            app:corner_radius="100dp"
+
             android:id="@+id/user_profilepic"
             android:padding="3dip"
             android:src="@drawable/user_f"
